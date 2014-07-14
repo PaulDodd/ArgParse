@@ -352,12 +352,16 @@ class CCommandBase
                 }
                 else // there are no more sub-commands.
                 {
-                    ret = this->Execute(argc, argv); // leaf command executes
+                    if (ProcessCommand(argc, argv)) {
+                        ret = this->Execute(); // leaf command executes
+                    }
                 }
             }
             else if(argc == 1)
             {
-                ret = this->Execute(argc, argv); // leaf command executes
+                if (ProcessCommand(argc, argv)) {
+                    ret = this->Execute(); // leaf command executes
+                }
             }
             else
             {
@@ -373,6 +377,20 @@ class CCommandBase
             }
             
             return ret;
+        }
+    
+        bool ProcessCommand(int argc, const char* argv[], bool bPrintHelpOnFail = true)
+        {
+            if(m_Parser.Parse(argc, argv))
+            {
+                return true;
+            }
+            else
+            {
+                if(bPrintHelpOnFail)
+                    PrintHelp();
+                return false;
+            }
         }
     
         void PrintHelp() const
@@ -399,7 +417,8 @@ class CCommandBase
     
         const string& GetName() const { return m_Name; }
     // Virtual methods
-        virtual int Execute(int argc, const char* argv[]) = 0;
+
+        virtual int Execute() = 0;
     
     protected:
         string                          m_Name;
@@ -414,7 +433,7 @@ class CProgramBase : public CCommandBase
         CProgramBase(string name, int argc, const char * argv[]) : CCommandBase(name), m_Argc(argc), m_Argv(argv) {}
         ~CProgramBase() {}
     
-        virtual int Execute(int argc, const char* argv[]) // default is to print the usage for anysub commands.
+        virtual int Execute() // default is to print the usage for anysub commands.
         {
             PrintHelp();
             return 0;
@@ -443,8 +462,9 @@ class CCommandHelp : public CCommandBase
     public:
         CCommandHelp() : CCommandBase("HELP") { m_Description = " Print the help for command "; }
         ~CCommandHelp() {}
-        int Execute(int argc, const char* argv[]) { return CMD_LINE_PRINT_HELP; }
+        int Execute() { return CMD_LINE_PRINT_HELP; }
 };
+
 CCommandHelp g_HelpCommand;
 
 }

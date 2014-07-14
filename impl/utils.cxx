@@ -26,23 +26,17 @@ class CTestSubCommand : public CCommandBase
         }
         ~CTestSubCommand(){}
     
-        int Execute(int argc, const char* argv[])
+        int Execute()
         {
-            if(m_Parser.Parse(argc, argv))
-            {
-                cout<< "Parse complete!" << endl;
-                if(m_Path.IsInitialized())
-                    cout << "Path : "<< m_Path.Value() << endl;
-                if(m_Number.IsInitialized())
-                    cout << "Number : "<< m_Number.Value() << endl;
-                if(m_bFlag.IsInitialized())
-                    cout << "Flag : "<< (m_bFlag.Value() ? "true" : "false") << endl;
-                
-            }
-            else{
-                PrintHelp();
-                return CMD_LINE_PARSE_ERROR;
-            }
+
+            cout<< "Executing command " << m_Name << endl;
+            if(m_Path.IsInitialized())
+                cout << "Path : "<< m_Path.Value() << endl;
+            if(m_Number.IsInitialized())
+                cout << "Number : "<< m_Number.Value() << endl;
+            if(m_bFlag.IsInitialized())
+                cout << "Flag : "<< (m_bFlag.Value() ? "true" : "false") << endl;
+        
             return CMD_LINE_NO_ERROR;
         }
     private:
@@ -63,7 +57,7 @@ class CTestCommand : public CCommandBase
         }
         ~CTestCommand() {}
     
-        int Execute(int argc, const char* argv[])
+        int Execute()
         {
             return CMD_LINE_PRINT_HELP; // this command is a no-op
         }
