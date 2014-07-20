@@ -14,10 +14,10 @@ class CTestSubCommand : public CCommandBase
     public:
         CTestSubCommand() : CCommandBase("sub"), m_Path("-path", "", true), m_Number("-n", 0, 10, false), m_bFlag("-flag")
         {
-            SetDescription("This is a test sub-command");
-            m_Path.SetUsage(" Path to a file");
-            m_Number.SetUsage("integer between 0 and 10");
-            m_bFlag.SetUsage("boolean example");
+            SetDescription      ("This is a test sub-command");
+            m_Path.SetUsage     ("Path to a file");
+            m_Number.SetUsage   ("Integer between 0 and 10");
+            m_bFlag.SetUsage    ("Boolean example");
             
             m_Parser.AddArg(m_Path);
             m_Parser.AddArg(m_Number);
@@ -26,7 +26,7 @@ class CTestSubCommand : public CCommandBase
         }
         ~CTestSubCommand(){}
     
-        int Execute()
+        int ExecuteMain()
         {
 
             cout<< "Executing command " << m_Name << endl;
@@ -57,7 +57,7 @@ class CTestCommand : public CCommandBase
         }
         ~CTestCommand() {}
     
-        int Execute()
+        int ExecuteMain()
         {
             return CMD_LINE_PRINT_HELP; // this command is a no-op
         }

@@ -310,9 +310,13 @@ class CCommandLineParser
 // Should be Directed-Acyclic-Graph.
 // command option cannot have the same name as a sub-command
 
-#define CMD_LINE_NO_ERROR       0x00000000
-#define CMD_LINE_PARSE_ERROR    0xf0000001
-#define CMD_LINE_PRINT_HELP     0xf0000002
+
+// Add a to lower and to upper case for string comparison.
+
+#define CMD_LINE_NO_ERROR               0x00000000
+#define CMD_LINE_PARSE_ERROR            0xf0000001
+#define CMD_LINE_PRINT_PARENT_HELP      0xf0000002
+#define CMD_LINE_PRINT_HELP             0xf0000004
 
 class CCommandBase
 {
@@ -339,6 +343,7 @@ class CCommandBase
     
         int ParseCommand(int argc, const char* argv[])
         {
+        
             int ret = CMD_LINE_NO_ERROR;
             
             if(argc >= 2)
@@ -353,14 +358,14 @@ class CCommandBase
                 else // there are no more sub-commands.
                 {
                     if (ProcessCommand(argc, argv)) {
-                        ret = this->Execute(); // leaf command executes
+                        ret = this->ExecuteMain(); // leaf command executes
                     }
                 }
             }
             else if(argc == 1)
             {
                 if (ProcessCommand(argc, argv)) {
-                    ret = this->Execute(); // leaf command executes
+                    ret = this->ExecuteMain(); // leaf command executes
                 }
             }
             else
@@ -368,14 +373,18 @@ class CCommandBase
                 cout << "Error too few arguments ("<< argc << " arguments) "<< endl;
                 ret = CMD_LINE_PARSE_ERROR;
             }
-            
             // Any arror handling here...
             if(ret == CMD_LINE_PRINT_HELP)
             {
                 PrintHelp();
-                ret = CMD_LINE_NO_ERROR; // do not print any parent command helps...
+                ret =  CMD_LINE_NO_ERROR; // do not print any parent command helps...
+            }
+            else if(ret == CMD_LINE_PRINT_PARENT_HELP)
+            {
+                ret = CMD_LINE_PRINT_HELP;
             }
             
+
             return ret;
         }
     
@@ -418,7 +427,7 @@ class CCommandBase
         const string& GetName() const { return m_Name; }
     // Virtual methods
 
-        virtual int Execute() = 0;
+        virtual int ExecuteMain() = 0;
     
     protected:
         string                          m_Name;
@@ -433,7 +442,7 @@ class CProgramBase : public CCommandBase
         CProgramBase(string name, int argc, const char * argv[]) : CCommandBase(name), m_Argc(argc), m_Argv(argv) {}
         ~CProgramBase() {}
     
-        virtual int Execute() // default is to print the usage for anysub commands.
+        virtual int ExecuteMain() // default is to print the usage for anysub commands.
         {
             PrintHelp();
             return 0;
@@ -462,7 +471,7 @@ class CCommandHelp : public CCommandBase
     public:
         CCommandHelp() : CCommandBase("HELP") { m_Description = " Print the help for command "; }
         ~CCommandHelp() {}
-        int Execute() { return CMD_LINE_PRINT_HELP; }
+        int ExecuteMain() { return CMD_LINE_PRINT_PARENT_HELP; }
 };
 
 CCommandHelp g_HelpCommand;
