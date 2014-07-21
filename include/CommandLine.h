@@ -136,12 +136,13 @@ class CCommandLineArgBool : public CCommandLineArgBase
 class CCommandLineArgString : public CCommandLineArgBase
 {
     public:
-        CCommandLineArgString(string arg, string AllowedValues = "", bool bRequired = false)
+        CCommandLineArgString(string arg, string AllowedValues = "", bool bRequired = false, const string& defaultValue = "")
         {
             m_Arg = arg;
             m_AllowedValues=utils::SplitString(AllowedValues, ",");
             m_bIsRequired = bRequired;
             m_bNextRequired = true;
+            m_Value = defaultValue;
         }
         ~CCommandLineArgString() {}
     
@@ -154,6 +155,10 @@ class CCommandLineArgString : public CCommandLineArgBase
                 {
                     m_Value = temp;
                     m_bInitialized = true;
+                }
+                else
+                {
+                    cout << temp << " was not found in the list of allowed values. " << endl;
                 }
             }
             else
