@@ -83,6 +83,25 @@ class TestProgram : public CProgramBase
 
 int main(int argc, const char * argv[])
 {
+    
+    set<int> intset;
+    vector<size_t> v;
+    vector<double> vf, vf2;
+    vector< vector<double> > vff;
+    vf2.push_back(1.0); vf2.push_back(1.0);
+    vff.push_back(vf2);
+    for(size_t i = 0; i < 10; i++) v.push_back(i);
+    vf.push_back(1.00000000001);
+    vf.push_back(0.99999999999);
+    
+    bool equal = 3 == 3;
+    cout << "hello world!" << equal << endl;
+    cout << boolalpha << "5 in vec = " << IsInVec(v, size_t(5)) << endl;
+    float_is_equal<double> f;
+    float_vec_is_equal<double> ff;
+    
+    cout << boolalpha << "1.0 in vecF = " << IsInVec<double, float_is_equal<double> >(vf, double(1.0)) << endl;
+    cout << boolalpha << "vf in vff = " << IsInVec<vector<double>, float_vec_is_equal<double> >(vff, vf) << endl;
     return TestProgram("argparse_test", argc, argv).Main();
 }
 

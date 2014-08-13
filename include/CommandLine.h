@@ -52,7 +52,7 @@ class CCommandLineArgNum : public CCommandLineArgBase
 {
     public:
         CCommandLineArgNum( std::string arg,
-                            const TVal& min = TVal(INT32_MIN),
+                            const TVal& min = TVal(INT32_MIN),  // remove this optional stuff since it doesn't work for all TVal
                             const TVal& max = TVal(INT32_MAX),
                             bool bRequired = false,
                             TVal init = TVal(0)
