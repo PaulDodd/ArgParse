@@ -91,14 +91,15 @@ inline vector<TVal> VectorCat(const vector<TVal>& v1, const vector<TVal>& v2)
     return ret;
 }
 
-template<class TVal>
+template<typename TVal, typename Compare = equal_to<TVal> >
 inline size_t FindInVec(const vector<TVal>& v, const TVal& val)
 {
     bool bFound = false;
     size_t ndx = v.size();
+    Compare IsEqual;
     for(size_t i = 0; i < v.size() && !bFound; i++)
     {
-        if(val == v[i])
+        if(IsEqual(val, v[i]))
         {
             bFound = true;
             ndx = i;
@@ -107,17 +108,17 @@ inline size_t FindInVec(const vector<TVal>& v, const TVal& val)
     return ndx;
 }
 
-template<class TVal>
+template<typename TVal, typename Compare = equal_to<TVal> >
 inline bool IsInVec(const vector<TVal>& v, const TVal& val)
 {
-    return (FindInVec(v, val) < v.size());
+    return (FindInVec<TVal, Compare>(v, val) < v.size());
 }
 
-template<class TVal>
+template<typename TVal, typename Compare = equal_to<TVal> >
 inline bool PushUnique(vector<TVal>& v, const TVal& elem)
 {
     bool bPushedElem = false;
-    if(!IsInVec(v, elem))
+    if(!IsInVec<TVal, Compare>(v, elem))
     {
         v.push_back(elem);
         bPushedElem = true;
@@ -126,14 +127,14 @@ inline bool PushUnique(vector<TVal>& v, const TVal& elem)
     return bPushedElem;
 }
 
-template<class TVal>
+template<typename TVal, typename Compare = equal_to<TVal> >
 inline vector<TVal> Intersection(const vector<TVal>& v1, const vector<TVal>& v2)
 {
     vector<TVal> intersection;
     
     for(size_t i = 0; i < v1.size(); i++)
     {
-        if(IsInVec(v2, v1[i]))
+        if(IsInVec<TVal, Compare>(v2, v1[i]))
             PushUnique(intersection, v1[i]); // no repeats allowed.
     }
     
@@ -154,7 +155,30 @@ inline int sign(const TVal& val, const double tol = 0.0)
     return ( fabs(val) <= tol ? 0 : ((val < 0) ? -1 : 1));
 }
 
+// this is strange but we have to do it this way because floating point template parameters are not supported.
+// tol = constant * 10^power;
+template<class TVal, int power = -6, size_t constant = 1>
+struct float_is_equal : binary_function<TVal, TVal, bool>
+{
+    TVal tol;
+    float_is_equal() : tol(TVal(constant)*pow(TVal(10.0), TVal(power))) {}
+    bool operator()(const TVal& x, const TVal& y) { return fabs(x-y) < tol;}
+};
 
+template<typename TVal, int power = -6, size_t constant = 1>
+struct float_vec_is_equal : binary_function<vector<TVal>, vector<TVal>, bool>
+{
+    float_is_equal<TVal, power, constant> f;
+    float_vec_is_equal() {}
+    bool operator()(const vector<TVal>& x, const vector<TVal>& y)
+    {
+        bool bEqual = true;
+        //cout << "x.size:"<< x.size() << " y.size():"<< y.size()<<endl;
+        if(x.size() != y.size()) bEqual = false;
+        for(size_t i = 0; i < x.size() && bEqual; i++) bEqual = f(x[i], y[i]);
+        return bEqual;
+    }
+};
 
 
 
