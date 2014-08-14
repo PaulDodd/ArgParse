@@ -80,7 +80,7 @@ class TestProgram : public CProgramBase
         CTestCommand m_TestCommand;
     
 };
-
+#define ALPHABET "01ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 int main(int argc, const char * argv[])
 {
     
@@ -102,6 +102,37 @@ int main(int argc, const char * argv[])
     
     cout << boolalpha << "1.0 in vecF = " << IsInVec<double, float_is_equal<double> >(vf, double(1.0)) << endl;
     cout << boolalpha << "vf in vff = " << IsInVec<vector<double>, float_vec_is_equal<double> >(vff, vf) << endl;
+    
+    cout << "-6 % 4=" << abs(-6%4) << endl;
+    
+    for(int i = 0; i < 10; i++){
+    cout << "d(0, "<< i <<") = " << mod_dist(0, i, 4) << endl;
+    }
+
+    for(int i = 0; i < 10; i++){
+    cout << "d(0, "<< i <<") = " << mod_dist(0, i, 7) << endl;
+    }
+    string alpha(ALPHABET), str1 = "AAABBB", str2 = "BAAABB", str3 = "AABBBA", str4 = "ABABBA";
+    
+    for(size_t i = 0; i < alpha.length(); i++)
+    {
+        cout << alpha[i]<< " = " <<int(alpha[i]) << endl;
+    }
+    
+    cout << str1 << " == " << str2 << " : " << boolalpha << CircularCompareString(str1, str2) << endl;
+    cout << str1 << " == " << str3 << " : " << boolalpha << CircularCompareString(str1, str3) << endl;
+    cout << str2 << " == " << str3 << " : " << boolalpha << CircularCompareString(str2, str3) << endl;
+    
+    cout << str1 << " == " << str4 << " : " << boolalpha << CircularCompareString(str1, str4) << endl;
+    cout << str2 << " == " << str4 << " : " << boolalpha << CircularCompareString(str2, str4) << endl;
+    cout << str3 << " == " << str4 << " : " << boolalpha << CircularCompareString(str3, str4) << endl;
+    
+    
+    cout << "10 = "<< NumberToString(10, 4, '0') << endl;
+    cout << "acos(1) = "<< acos(1)<< endl;
+    cout << "acos(-1) = "<< acos(-1.0000000001)<< endl;
+    
+    
     return TestProgram("argparse_test", argc, argv).Main();
 }
 

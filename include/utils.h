@@ -155,6 +155,28 @@ inline int sign(const TVal& val, const double tol = 0.0)
     return ( fabs(val) <= tol ? 0 : ((val < 0) ? -1 : 1));
 }
 
+inline int mod_dist(const int& a, const int& b, const int& n)
+{
+    int an = abs(a % n), bn = abs(b % n);
+    int d = abs(an-bn);
+    if(abs(d) > (n/2))
+    {
+        d = n - d;
+    }
+    return d;
+}
+
+template< class TVal>
+inline TVal arccos(const TVal& x){
+    if(x < -1)
+        return acos(-1);
+    else if(x > 1)
+        return acos(1);
+    else
+        return acos(x);
+}
+
+
 // this is strange but we have to do it this way because floating point template parameters are not supported.
 // tol = constant * 10^power;
 template<class TVal, int power = -6, size_t constant = 1>
@@ -187,11 +209,13 @@ struct float_vec_is_equal : binary_function<vector<TVal>, vector<TVal>, bool>
 /************************************************************************************************************************************************************************/
 
 template<class TVal>
-inline string NumberToString(TVal num) // TODO: add formatting options.
+inline string NumberToString(TVal num, const size_t& szFill = 0, const char& chFill = '0') // TODO: add formatting options.
 {
     // could alternatively use sprintf.
     string str;
     stringstream stream;
+    if(szFill > 0)
+        stream << setfill(chFill) << setw(szFill);
     stream<<num;
     stream>>str;
     return str;
@@ -254,6 +278,51 @@ inline vector<string> SplitString(const string& str, const string& splitStr, boo
     }
     return strvec;
 }
+
+// rotate str by rot postions ( positive is forward negative is backward)
+inline string InvertString(const string& str)
+{
+    string invert;
+    size_t n = str.length();
+    for(size_t i = 0; i < n; i++)
+        invert += str[n-1-i];
+    return invert;
+}
+
+inline bool COMP(const string& A, const string& B, size_t& i, size_t& j)
+{
+    bool bComp = true;
+    size_t n = A.length();
+    for(size_t k = 0; k < n && bComp; k++)
+    {
+        if(A[(i+k)%n] < B[(j+k)%n])
+        {
+            j += k+1;
+            bComp = false;
+        }
+        else if (A[(i+k)%n] > B[(j+k)%n])
+        {
+            i += k+1;
+            bComp = false;
+        }
+    }
+    return bComp;
+}
+
+inline bool CircularCompareString(const string& A, const string& B)
+{
+    bool bEqual = false, bContinue = A.length() == B.length();
+    size_t i = 0, j = 0, n = A.length();
+    vector<size_t> DA, DB;
+    while( bContinue )
+    {
+        bEqual = COMP(A, B, i, j);
+        bContinue = i < n && j < n && !bEqual;
+    }
+    
+    return bEqual;
+}
+
 
 
 
