@@ -3,12 +3,18 @@
 // Paul Dodd
 // 04/25/2013
 // 
- 
+
+#ifndef SHARED_FILE_STOPWATCH_H
+#define SHARED_FILE_STOPWATCH_H
+
+#include "SharedInclude.h"
+
 namespace utils
 {
 
 using namespace std;
 #if __cplusplus >= 201103L
+
 
 class CStopwatch
 {
@@ -110,6 +116,6 @@ class CStopwatch
 
 }
 
-
+#endif
 
 
