@@ -96,7 +96,7 @@ int main(int argc, const char * argv[])
     
     bool equal = 3 == 3;
     cout << "hello world!" << equal << endl;
-    cout << boolalpha << "5 in vec = " << IsInVec(v, size_t(5)) << endl;
+    cout << boolalpha << "5 in vec = " << IsInVec<size_t, equal_to<size_t> >(v, size_t(5)) << endl;
     float_is_equal<double> f;
     float_vec_is_equal<double> ff;
     
