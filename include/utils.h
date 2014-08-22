@@ -186,7 +186,7 @@ inline vector<TVal> Intersection(const vector<TVal>& v1, const vector<TVal>& v2)
     
     for(size_t i = 0; i < v1.size(); i++)
     {
-        if(IsInVec<TVal, Compare>(v2, v1[i]))
+        if(IsInVec<TVal>(v2, v1[i]))
             PushUnique(intersection, v1[i]); // no repeats allowed.
     }
     
