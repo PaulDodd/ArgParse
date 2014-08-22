@@ -91,6 +91,7 @@ inline vector<TVal> VectorCat(const vector<TVal>& v1, const vector<TVal>& v2)
     return ret;
 }
 
+#ifdef c_plus_plus_11
 template<typename TVal, typename Compare = equal_to<TVal> >
 inline size_t FindInVec(const vector<TVal>& v, const TVal& val)
 {
@@ -140,7 +141,59 @@ inline vector<TVal> Intersection(const vector<TVal>& v1, const vector<TVal>& v2)
     
     return intersection;
 }
+#else
 
+template< typename TVal >
+inline size_t FindInVec(const vector<TVal>& v, const TVal& val)
+{
+    bool bFound = false;
+    size_t ndx = v.size();
+    equal_to<TVal> IsEqual;
+    for(size_t i = 0; i < v.size() && !bFound; i++)
+    {
+        if(IsEqual(val, v[i]))
+        {
+            bFound = true;
+            ndx = i;
+        }
+    }
+    return ndx;
+}
+
+template<typename TVal >
+inline bool IsInVec(const vector<TVal>& v, const TVal& val)
+{
+    return (FindInVec<TVal>(v, val) < v.size());
+}
+
+template<typename TVal >
+inline bool PushUnique(vector<TVal>& v, const TVal& elem)
+{
+    bool bPushedElem = false;
+    if(!IsInVec<TVal>(v, elem))
+    {
+        v.push_back(elem);
+        bPushedElem = true;
+    }
+    
+    return bPushedElem;
+}
+
+template<typename TVal >
+inline vector<TVal> Intersection(const vector<TVal>& v1, const vector<TVal>& v2)
+{
+    vector<TVal> intersection;
+    
+    for(size_t i = 0; i < v1.size(); i++)
+    {
+        if(IsInVec<TVal, Compare>(v2, v1[i]))
+            PushUnique(intersection, v1[i]); // no repeats allowed.
+    }
+    
+    return intersection;
+}
+
+#endif
 
 /************************************************************************************************************************************************************************/
 // Some helpful math functions
