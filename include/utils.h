@@ -441,7 +441,7 @@ inline bool     is_directory(const dirent* dir) {
 #ifdef c_plus_plus_11
 
 template <class TVal>
-bool load_txt(vector< vector<TVal> >& data, const std::string& path, string delim = ",", const size_t& reserve = 0 )
+bool load_txt(vector< vector<TVal> >& data, const std::string& path, string delim = ",", const size_t& reserve = 0, size_t skiprows = 0 )
 {
     ifstream txtfile;
     txtfile.open(path, ios_base::in);
@@ -464,6 +464,7 @@ bool load_txt(vector< vector<TVal> >& data, const std::string& path, string deli
     }
     
     size_t pos = 0;
+    size_t skp = 0;
     while(pos < length)
     {
         
@@ -475,6 +476,12 @@ bool load_txt(vector< vector<TVal> >& data, const std::string& path, string deli
         else
             n = length - pos;
         
+        if(skp < skiprows)
+        {
+            pos += n+1; // skip the '\n' char
+            skp++;
+            continue;
+        }
         // cout << "Reading position " << pos << " of " << length << " for "<< n << " chars" << "\r" << std::flush;
         string line(&buffer[pos], n);
         //cout << "checkpoint 1" << endl;
@@ -509,10 +516,10 @@ bool load_txt(vector< vector<TVal> >& data, const std::string& path, string deli
     return true;
 }
 template <class TVal>
-inline vector< vector<TVal> > load_txt(const std::string& path, string delim = ",", const size_t& reserve = 0 )
+inline vector< vector<TVal> > load_txt(const std::string& path, string delim = ",", const size_t& reserve = 0, size_t skiprows = 0 )
 {
     vector< vector<TVal> > data;
-    load_txt<TVal>(data, path, delim, reserve);
+    load_txt<TVal>(data, path, delim, reserve, skiprows);
     return data;
 }
 
