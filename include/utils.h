@@ -268,7 +268,7 @@ inline string NumberToString(TVal num, const size_t& szFill = 0, const char& chF
     string str;
     stringstream stream;
     if(szFill > 0)
-        stream << setfill(chFill) << setw(szFill);
+        stream << setfill(chFill) << setw(int(szFill));
     stream<<num;
     stream>>str;
     return str;
