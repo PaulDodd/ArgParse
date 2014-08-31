@@ -28,14 +28,14 @@ typedef long long int64;
 template<class RNG>
 inline void seed_generator(RNG& generator, size_t&& n = 10)
 {
-    vector<unsigned int> seeds;
+    vector<size_t> seeds;
     try {
         random_device rd;
         for(size_t i = 0; i < n; i++)
             seeds.push_back(rd());
     } catch (...) {
         cout << "random_device is not available..." << endl;
-        seeds.push_back(std::chrono::system_clock::now().time_since_epoch().count());
+        seeds.push_back(size_t(std::chrono::system_clock::now().time_since_epoch().count()));
         seeds.push_back(size_t(getpid()));
     }
     cout << "seeds = ";
@@ -53,6 +53,33 @@ inline void seed_generator(RNG& generator, size_t&& n = 10)
 /************************************************************************************************************************************************************************/
 // std::vector class helper functions.
 /************************************************************************************************************************************************************************/
+#ifdef c_plus_plus_11
+template<class TVal>
+inline double mean(const vector<TVal>& v)
+{
+    double sum = 0;
+    for(TVal x : v)
+        sum+=x;
+    return sum/v.size();
+}
+template<class TVal>
+inline pair<double, double> mean_std_dev(const vector<TVal>& v)
+{
+    double sum = 0;
+    double m = mean(v), d = 0.0;
+    for(TVal x : v){
+        d = x - m;
+        sum+=d*d;
+    }
+    return pair<double, double> (m, sum/(v.size()-1));
+}
+
+template<class TVal>
+inline double std_dev(const vector<TVal>& v)
+{
+    return mean_std_dev(v).second;
+}
+#endif
 template<class TVal>
 inline size_t argmin(const vector<TVal>& v)
 {
@@ -221,6 +248,17 @@ inline vector<TVal> Intersection(const vector<TVal>& v1, const vector<TVal>& v2)
 }
 
 #endif
+
+template<class TVal>
+TVal index_sum(const vector<TVal> v, const vector<size_t>& ndx)
+{
+    TVal sum = TVal(0);
+    for(vector<size_t>::const_iterator i = ndx.begin(); i != ndx.end(); i++)
+        sum += v[*i];
+    return sum;
+}
+
+
 
 /************************************************************************************************************************************************************************/
 // Some helpful math functions
@@ -575,7 +613,7 @@ inline vector<string> FindAllPaths(string SearchPath, __uint8_t FileTypeRestrict
     while((dirNav = readdir(dirc)) && dirc)
     {
         string name(dirNav->d_name);
-        cout <<name<<(is_directory(dirNav) ? " Dir " : " File ")<<endl; // TODO: make this scan recursively.  
+//        cout <<name<<(is_directory(dirNav) ? " Dir " : " File ")<<endl; // TODO: make this scan recursively.
         bAdd = true;
         for (int i = 0; (i < searchPattern.size() && bAdd); i++)
         {
