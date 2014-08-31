@@ -1,11 +1,11 @@
 cmake_minimum_required (VERSION 2.8)
 #SET(CMAKE_VERBOSE_MAKEFILE ON)
 
-#SET (CMAKE_CXX_FLAGS          "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
+SET (CMAKE_CXX_FLAGS          "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
 SET (CMAKE_CXX_FLAGS          "${CMAKE_CXX_FLAGS} -Wno-deprecated")
 #SET (CMAKE_CXX_FLAGS          "${CMAKE_CXX_FLAGS} -std=c++11 -fabi-version=7 -lstdc++")# -stdlib=libc++
-SET(CMAKE_CXX_COMPILER "gcc")
-SET(CMAKE_C_COMPILER    "gcc")
+#SET(CMAKE_CXX_COMPILER "gcc")
+#SET(CMAKE_C_COMPILER    "gcc")
 MESSAGE("C++ Compiler: ${CMAKE_CXX_COMPILER} Flags: ${CMAKE_CXX_FLAGS}")
 project (argparse)
 

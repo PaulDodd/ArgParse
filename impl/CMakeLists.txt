@@ -1,7 +1,6 @@
 
-SET (CMAKE_CXX_FLAGS          "${CMAKE_CXX_FLAGS} -Wno-deprecated")
-SET (CMAKE_CXX_FLAGS          "${CMAKE_CXX_FLAGS} -std=c++11 -fabi-version=7 -lstdc++")# -stdlib=libc++
-
+#SET (CMAKE_CXX_FLAGS          "${CMAKE_CXX_FLAGS} -Wno-deprecated")
+SET (CMAKE_CXX_FLAGS          "${CMAKE_CXX_FLAGS} -std=c++11  -stdlib=libc++")#-fabi-version=7 -lstdc++
 # build test programs.
 set(TEST_SOURCE_FILE "${PROJECT_SOURCE_DIR}/utils.cxx")
 set(TEST_PROG_NAME "argparse_test")

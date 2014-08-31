@@ -93,7 +93,7 @@ int main(int argc, const char * argv[])
     for(size_t i = 0; i < 10; i++) v.push_back(i);
     vf.push_back(1.00000000001);
     vf.push_back(0.99999999999);
-    
+
     bool equal = 3 == 3;
     cout << "hello world!" << equal << endl;
     cout << boolalpha << "5 in vec = " << IsInVec<size_t, equal_to<size_t> >(v, size_t(5)) << endl;
@@ -119,6 +119,8 @@ int main(int argc, const char * argv[])
         cout << alpha[i]<< " = " <<int(alpha[i]) << endl;
     }
     
+
+    
     cout << str1 << " == " << str2 << " : " << boolalpha << CircularCompareString(str1, str2) << endl;
     cout << str1 << " == " << str3 << " : " << boolalpha << CircularCompareString(str1, str3) << endl;
     cout << str2 << " == " << str3 << " : " << boolalpha << CircularCompareString(str2, str3) << endl;
@@ -132,8 +134,19 @@ int main(int argc, const char * argv[])
     cout << "acos(1) = "<< acos(1)<< endl;
     cout << "acos(-1) = "<< acos(-1.0000000001)<< endl;
     
+    std::mt19937_64 generator;
+    seed_generator(generator);
+//    cout << "after RNG = " << generator << endl;
     
-    return TestProgram("argparse_test", argc, argv).Main();
+    std::uniform_real_distribution<double> u01(0,1);
+    std::uniform_real_distribution<double> u81(0.8,1);
+    
+    auto rnd = std::bind(u01, generator);
+    auto rnd2 = std::bind(u81, generator);
+    for(size_t i = 0; i < 10; i++)
+        cout << "rnd "<< rnd() << ", "<< rnd2() << endl;
+    
+    return TestProgram(argv[0], argc, argv).Main();
 }
 
 

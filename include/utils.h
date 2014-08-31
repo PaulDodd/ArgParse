@@ -5,8 +5,12 @@
 #define SHARED_FILE_UTILS_H
 
 #include "SharedInclude.h"
-
-
+#ifdef c_plus_plus_11
+#include <chrono>
+#include <random>
+#include <sys/types.h>
+#include <unistd.h>
+#endif
 
 namespace utils
 {
@@ -19,8 +23,31 @@ typedef long long int64;
 
 
 
-// TODO: pull in the tuple functions from the json_parser project;
+#ifdef c_plus_plus_11
 
+template<class RNG>
+inline void seed_generator(RNG& generator, size_t&& n = 10)
+{
+    vector<unsigned int> seeds;
+    try {
+        random_device rd;
+        for(size_t i = 0; i < n; i++)
+            seeds.push_back(rd());
+    } catch (...) {
+        cout << "random_device is not available..." << endl;
+        seeds.push_back(std::chrono::system_clock::now().time_since_epoch().count());
+        seeds.push_back(size_t(getpid()));
+    }
+    cout << "seeds = ";
+    for(size_t i = 0; i < 10; i++)
+        cout << seeds[i] << " ";
+    cout << endl;
+    
+    seed_seq seq(seeds.begin(), seeds.end());
+    generator.seed(seq);
+}
+
+#endif
 
 
 /************************************************************************************************************************************************************************/
