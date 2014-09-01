@@ -135,7 +135,12 @@ int main(int argc, const char * argv[])
     cout << "acos(-1) = "<< acos(-1.0000000001)<< endl;
     
     std::mt19937_64 generator;
-    seed_generator(generator);
+    cout<< "****************************************************************************************************************************************************"<<endl;
+    cout << generator<< endl<< endl << endl;
+    rng_util::seed_generator(generator);
+    cout<< "****************************************************************************************************************************************************"<<endl;
+    cout << generator<< endl<< endl << endl;
+
 //    cout << "after RNG = " << generator << endl;
     
     std::uniform_real_distribution<double> u01(0,1);

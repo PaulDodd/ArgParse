@@ -24,9 +24,10 @@ typedef long long int64;
 
 
 #ifdef c_plus_plus_11
+namespace rng_util{
 
 template<class RNG>
-inline void seed_generator(RNG& generator, size_t&& n = 10)
+inline void seed_generator(RNG& generator, const size_t& n = 100)
 {
     vector<size_t> seeds;
     try {
@@ -38,15 +39,16 @@ inline void seed_generator(RNG& generator, size_t&& n = 10)
         seeds.push_back(size_t(std::chrono::system_clock::now().time_since_epoch().count()));
         seeds.push_back(size_t(getpid()));
     }
-    cout << "seeds = ";
-    for(size_t i = 0; i < 10; i++)
-        cout << seeds[i] << " ";
-    cout << endl;
+//    cout << "seeds = ";
+//    for(size_t i = 0; i < n; i++)
+//        cout << seeds[i] << " ";
+//    cout << endl;
     
     seed_seq seq(seeds.begin(), seeds.end());
     generator.seed(seq);
 }
 
+}
 #endif
 
 
