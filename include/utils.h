@@ -81,7 +81,7 @@ inline double std_dev(const vector<TVal>& v)
 {
     return mean_std_dev(v).second;
 }
-#endif
+
 
 template<class TVal>
 inline size_t argmin(const vector<TVal>& v)
@@ -126,7 +126,7 @@ inline TVal maximum(const vector<TVal>& v)
         throw runtime_error("Empty List encountered in utils::maximum.");
     return v[argmax(v)];
 }
-
+#endif
 template<class TVal>
 inline void FromArrayToVector(vector<TVal>& vec, const TVal * pArray, const size_t& szArray)
 {
