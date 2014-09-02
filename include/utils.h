@@ -81,13 +81,13 @@ inline double std_dev(const vector<TVal>& v)
 {
     return mean_std_dev(v).second;
 }
-
+#endif
 
 template<class TVal>
 inline size_t argmin(const vector<TVal>& v)
 {
-    if(!v.size())
-        throw runtime_error("Empty List encountered in utils::argmin.");
+//    if(!v.size())
+//        throw runtime_error("Empty List encountered in utils::argmin.");
     TVal m = v[0];
     size_t mndx = 0;
     for(size_t i = 1; i < v.size(); i++){
@@ -100,16 +100,16 @@ inline size_t argmin(const vector<TVal>& v)
 template<class TVal>
 inline TVal mininum(const vector<TVal>& v)
 {
-    if(!v.size())
-        throw runtime_error("Empty List encountered in utils::minimum.");
+//    if(!v.size())
+//        throw runtime_error("Empty List encountered in utils::minimum.");
     return v[argmin(v)];
 }
 
 template<class TVal>
 inline size_t argmax(const vector<TVal>& v)
 {
-    if(!v.size())
-        throw runtime_error("Empty List encountered in utils::argmax.");
+//    if(!v.size())
+//        throw runtime_error("Empty List encountered in utils::argmax.");
     TVal m = v[0];
     size_t mndx = 0;
     for(size_t i = 1; i < v.size(); i++){
@@ -122,11 +122,11 @@ inline size_t argmax(const vector<TVal>& v)
 template<class TVal>
 inline TVal maximum(const vector<TVal>& v)
 {
-    if(!v.size())
-        throw runtime_error("Empty List encountered in utils::maximum.");
+//    if(!v.size())
+//        throw runtime_error("Empty List encountered in utils::maximum.");
     return v[argmax(v)];
 }
-#endif
+
 template<class TVal>
 inline void FromArrayToVector(vector<TVal>& vec, const TVal * pArray, const size_t& szArray)
 {
