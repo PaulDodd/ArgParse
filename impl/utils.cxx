@@ -151,6 +151,8 @@ int main(int argc, const char * argv[])
     for(size_t i = 0; i < 10; i++)
         cout << "rnd "<< rnd() << ", "<< rnd2() << endl;
     
+    maximum(vector<size_t>());
+    
     return TestProgram(argv[0], argc, argv).Main();
 }
 

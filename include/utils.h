@@ -62,7 +62,7 @@ inline double mean(const vector<TVal>& v)
     double sum = 0;
     for(TVal x : v)
         sum+=x;
-    return sum/v.size();
+    return v.size() ? sum/v.size() : 0;
 }
 template<class TVal>
 inline pair<double, double> mean_std_dev(const vector<TVal>& v)
@@ -73,7 +73,7 @@ inline pair<double, double> mean_std_dev(const vector<TVal>& v)
         d = x - m;
         sum+=d*d;
     }
-    return pair<double, double> (m, sum/(v.size()-1));
+    return pair<double, double> (m, ((v.size() > 1) ? sqrt(sum/(v.size()-1)) : 0));
 }
 
 template<class TVal>
@@ -82,9 +82,12 @@ inline double std_dev(const vector<TVal>& v)
     return mean_std_dev(v).second;
 }
 #endif
+
 template<class TVal>
 inline size_t argmin(const vector<TVal>& v)
 {
+    if(!v.size())
+        throw runtime_error("Empty List encountered in utils::argmin.");
     TVal m = v[0];
     size_t mndx = 0;
     for(size_t i = 1; i < v.size(); i++){
@@ -97,12 +100,16 @@ inline size_t argmin(const vector<TVal>& v)
 template<class TVal>
 inline TVal mininum(const vector<TVal>& v)
 {
+    if(!v.size())
+        throw runtime_error("Empty List encountered in utils::minimum.");
     return v[argmin(v)];
 }
 
 template<class TVal>
 inline size_t argmax(const vector<TVal>& v)
 {
+    if(!v.size())
+        throw runtime_error("Empty List encountered in utils::argmax.");
     TVal m = v[0];
     size_t mndx = 0;
     for(size_t i = 1; i < v.size(); i++){
@@ -115,6 +122,8 @@ inline size_t argmax(const vector<TVal>& v)
 template<class TVal>
 inline TVal maximum(const vector<TVal>& v)
 {
+    if(!v.size())
+        throw runtime_error("Empty List encountered in utils::maximum.");
     return v[argmax(v)];
 }
 
@@ -146,6 +155,14 @@ inline vector<TVal> VectorCat(const vector<TVal>& v1, const vector<TVal>& v2)
         ret.push_back(v2[i]);
     return ret;
 }
+
+template<class TVal>
+inline void VectorAppend(vector<TVal>& v1, const vector<TVal>& v2)
+{
+    for(size_t i = 0; i < v2.size(); i++)
+        v1.push_back(v2[i]);
+}
+
 
 #ifdef c_plus_plus_11
 template<typename TVal, typename Compare = equal_to<TVal> >
@@ -508,87 +525,73 @@ inline bool     is_directory(const dirent* dir) {
 #ifdef c_plus_plus_11
 
 template <class TVal>
-bool load_txt(vector< vector<TVal> >& data, const std::string& path, string delim = ",", const size_t& reserve = 0, size_t skiprows = 0 )
+inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, string delim = ",", const size_t& reserve = 0, size_t skiprows = 0 , size_t stoprow = 0)
 {
     ifstream txtfile;
     txtfile.open(path, ios_base::in);
-    unique_ptr< char[] > buffer;
-    size_t length = 0;
-    
     if(txtfile)
     {
-        txtfile.seekg (0, txtfile.end);
-        length = txtfile.tellg();
-        txtfile.seekg (0, txtfile.beg);
-        // allocate memory:
-        buffer.reset( new char [length] );
-        // read data as a block:
-        txtfile.read (buffer.get(),length);
+        string line;
+        size_t ln = 0, lnread = 0;
+        while (std::getline(txtfile, line, '\n'))
+        {
+            ln++;
+            if(ln-1 < skiprows) continue;
+            else if (stoprow && ln > stoprow) break;
+            
+            lnread++;
+            vector<string> split = SplitString(line, delim);
+
+            if(data.size() == 0)
+            {
+                for(size_t i = 0; i < split.size(); i++)
+                {
+                    vector<TVal> temp;
+                    data.push_back(temp);
+                    if( reserve > 0 )
+                        data[i].reserve(reserve);
+                }
+            }
+            //cout << "checkpoint 2" << endl;
+            for(size_t i = 0; i < split.size(); i++)
+            {
+                TVal temp;
+                stringstream ss;
+//                cout << "split["<<i<<"] = " << split[i] << endl;
+                ss << split[i];
+                ss >> temp;
+                data[i].push_back( temp );
+            }
+        }
+//        cout << "Read " << lnread << " lines from file. " << endl;
+        txtfile.close();
     }
     else
     {
         return false;
     }
     
-    size_t pos = 0;
-    size_t skp = 0;
-    while(pos < length)
-    {
-        
-        char * end = (char *) memchr(&buffer[pos], '\n' ,length - pos);
-        size_t n = 0;
-        
-        if (end)
-            n = size_t(ptrdiff_t(end - &buffer[pos])/sizeof(char));
-        else
-            n = length - pos;
-        
-        if(skp < skiprows)
-        {
-            pos += n+1; // skip the '\n' char
-            skp++;
-            continue;
-        }
-        // cout << "Reading position " << pos << " of " << length << " for "<< n << " chars" << "\r" << std::flush;
-        string line(&buffer[pos], n);
-        //cout << "checkpoint 1" << endl;
-        vector<string> split = SplitString(line, delim);
-
-        if(data.size() == 0)
-        {
-            for(size_t i = 0; i < split.size(); i++)
-            {
-                vector<TVal> temp;
-                data.push_back(temp);
-                if( reserve > 0 )
-                    data[i].reserve(reserve);
-            }
-        }
-        //cout << "checkpoint 2" << endl;
-        for(size_t i = 0; i < split.size(); i++)
-        {
-            TVal temp;
-            stringstream ss;
-            //cout << "split[i] = " << split[i] << endl;
-            ss << split[i];
-            ss >> temp;
-            data[i].push_back( temp );
-        }
-        
-        pos += n+1; // skip the '\n' char
-        
-    }
-    // cout  << endl;
-    
     return true;
 }
+
 template <class TVal>
-inline vector< vector<TVal> > load_txt(const std::string& path, string delim = ",", const size_t& reserve = 0, size_t skiprows = 0 )
+inline vector< vector<TVal> > load_txt(const std::string& path, string delim = ",", const size_t& reserve = 0, size_t skiprows = 0 , size_t stoprow = 0)
 {
     vector< vector<TVal> > data;
-    load_txt<TVal>(data, path, delim, reserve, skiprows);
+    load_txt<TVal>(data, path, delim, reserve, skiprows, stoprow);
     return data;
 }
+
+template <class TVal>
+inline TVal peek_at_file(const std::string& path, string delim = ",", size_t skiprows = 0)
+{
+    vector< vector<TVal> > data;
+    if(load_txt(data, path, delim, 0, skiprows, skiprows+1))
+        return data[0][0];
+    else
+        return TVal();
+}
+
 
 #endif
 
