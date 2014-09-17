@@ -522,11 +522,21 @@ inline bool     is_directory(const dirent* dir) {
     return (dir->d_type == DT_DIR);
 }
 
-#ifdef c_plus_plus_11
+//#ifdef c_plus_plus_11
+inline bool file_exists (const std::string& name)
+{
+    if (FILE *file = fopen(name.c_str(), "r"))
+    {
+        fclose(file);
+        return true;
+    }
+    return false;
+}
 
 template <class TVal>
-inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, string delim = ",", const size_t& reserve = 0, size_t skiprows = 0 , size_t stoprow = 0)
+inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, string delim = ",", const size_t& reserve = 0, const size_t& skiprows = 0 , const size_t& stoprow = 0, const size_t& axis = 1)
 {
+    // TODO: check for axis.
     ifstream txtfile;
     txtfile.open(path, ios_base::in);
     if(txtfile)
@@ -542,7 +552,7 @@ inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, stri
             lnread++;
             vector<string> split = SplitString(line, delim);
 
-            if(data.size() == 0)
+            if(data.size() == 0 && axis == 1)
             {
                 for(size_t i = 0; i < split.size(); i++)
                 {
@@ -552,25 +562,37 @@ inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, stri
                         data[i].reserve(reserve);
                 }
             }
-            //cout << "checkpoint 2" << endl;
+            vector<TVal> tempAxis0;
             for(size_t i = 0; i < split.size(); i++)
             {
-                TVal temp;
-                stringstream ss;
-//                cout << "split["<<i<<"] = " << split[i] << endl;
-                ss << split[i];
-                ss >> temp;
-                data[i].push_back( temp );
+                if(axis == 1)
+                {
+                    TVal temp;
+                    stringstream ss;
+                    ss << split[i];
+                    ss >> temp;
+                    data[i].push_back( temp );
+                }
+                else // assume axis = 0;
+                {
+                    TVal temp;
+                    stringstream ss;
+                    ss << split[i];
+                    ss >> temp;
+                    tempAxis0.push_back( temp );
+                }
+            }
+            if(axis != 1) // assume axis = 0;
+            {
+                data.push_back( tempAxis0 );
             }
         }
-//        cout << "Read " << lnread << " lines from file. " << endl;
         txtfile.close();
     }
     else
     {
         return false;
     }
-    
     return true;
 }
 
@@ -586,14 +608,16 @@ template <class TVal>
 inline TVal peek_at_file(const std::string& path, string delim = ",", size_t skiprows = 0)
 {
     vector< vector<TVal> > data;
-    if(load_txt(data, path, delim, 0, skiprows, skiprows+1))
-        return data[0][0];
-    else
+    if(load_txt(data, path, delim, 0, skiprows, skiprows+1)){
+        return (data.size() ? (data[0].size() ? data[0][0] : TVal()) : TVal());
+    }
+    else{
         return TVal();
+    }
 }
 
 
-#endif
+//#endif
 
 // TODO:
 //  Clean up this function to make this work more expectedly.
