@@ -536,9 +536,9 @@ inline bool file_exists (const std::string& name)
 template <class TVal>
 inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, string delim = ",", const size_t& reserve = 0, const size_t& skiprows = 0 , const size_t& stoprow = 0, const size_t& axis = 1)
 {
-    // TODO: check for axis.
+    // TODO: check for valid axis.
     ifstream txtfile;
-    txtfile.open(path, ios_base::in);
+    txtfile.open(path.c_str(), ios_base::in);
     if(txtfile)
     {
         string line;
