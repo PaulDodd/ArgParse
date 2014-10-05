@@ -51,6 +51,15 @@ inline void seed_generator(RNG& generator, const size_t& n = 100)
 }
 #endif
 
+/************************************************************************************************************************************************************************/
+// std::complex class helper functions.
+/************************************************************************************************************************************************************************/
+template < class TVal>
+class complex_greater_than : binary_function<std::complex<TVal>, std::complex<TVal>, bool>
+{
+    public:
+        bool operator()(const std::complex<TVal>& x, const std::complex<TVal>& y ) { return std::norm(x) > std::norm(y); }
+};
 
 /************************************************************************************************************************************************************************/
 // std::vector class helper functions.
