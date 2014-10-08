@@ -119,6 +119,9 @@ inline size_t argmax(const vector<TVal>& v)
 {
 //    if(!v.size())
 //        throw runtime_error("Empty List encountered in utils::argmax.");
+    if(!v.size())
+        return 0;
+    
     TVal m = v[0];
     size_t mndx = 0;
     for(size_t i = 1; i < v.size(); i++){
@@ -133,6 +136,8 @@ inline TVal maximum(const vector<TVal>& v)
 {
 //    if(!v.size())
 //        throw runtime_error("Empty List encountered in utils::maximum.");
+    if(!v.size())
+        return TVal();
     return v[argmax(v)];
 }
 

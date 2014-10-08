@@ -103,7 +103,8 @@ int main(int argc, const char * argv[])
     cout << boolalpha << "1.0 in vecF = " << IsInVec<double, float_is_equal<double> >(vf, double(1.0)) << endl;
     cout << boolalpha << "vf in vff = " << IsInVec<vector<double>, float_vec_is_equal<double> >(vff, vf) << endl;
     
-    cout << "-6 % 4=" << abs(-6%4) << endl;
+    cout << "abs(-6 % 4)=" << -5%4 << endl;
+    cout << "int(-6) % size_t(4)=" << int(-6)%size_t(4) << endl;
     
     for(int i = 0; i < 10; i++){
     cout << "d(0, "<< i <<") = " << mod_dist(0, i, 4) << endl;
@@ -137,9 +138,9 @@ int main(int argc, const char * argv[])
     std::mt19937_64 generator;
     cout<< "****************************************************************************************************************************************************"<<endl;
     cout << generator<< endl<< endl << endl;
-    rng_util::seed_generator(generator);
+//    rng_util::seed_generator(generator);
     cout<< "****************************************************************************************************************************************************"<<endl;
-    cout << generator<< endl<< endl << endl;
+//    cout << generator<< endl<< endl << endl;
 
 //    cout << "after RNG = " << generator << endl;
     

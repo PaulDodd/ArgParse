@@ -271,6 +271,7 @@ class CCommandLineParser
             bool bParseComplete = true;
             for(int i = 1; i < argc; i++)
             {
+                cout << i << " of "<< argc << ": "<< argv[i] << endl;
                 CCommandLineArgBase* pArg = GetArg(string(argv[i]));
                 if(!pArg)
                 {
