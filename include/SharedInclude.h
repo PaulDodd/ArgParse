@@ -34,8 +34,8 @@
 typedef unsigned long long  uint64;
 
 // Global #defines
-#define SMALL           (1.0e-12)  // Should set this to the computer epsilon 
-#define SMALL_FLOAT     (1.0e-5)
+#define SMALL           (1.0e-12)  // Should set this to the computer epsilon
+#define SMALL_FLOAT     (1.0e-6)
 #define LARGE           (1.0e10)
 
 
