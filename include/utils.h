@@ -359,12 +359,15 @@ struct float_vec_is_equal : binary_function<vector<TVal>, vector<TVal>, bool>
 // std::string class helper functions.
 /************************************************************************************************************************************************************************/
 
+
 template<class TVal>
-inline string NumberToString(TVal num, const size_t& szFill = 0, const char& chFill = '0') // TODO: add formatting options.
+inline string NumberToString(TVal num, const size_t& szFill = 0, const char& chFill = '0', const std::ios_base::fmtflags setflags = std::ios_base::dec, const std::ios_base::fmtflags unsetflags = std::ios_base::fmtflags(0)) // TODO: add formatting options.
 {
     // could alternatively use sprintf.
     string str;
     stringstream stream;
+    stream.unsetf(unsetflags);
+    stream.setf(setflags);
     if(szFill > 0)
         stream << setfill(chFill) << setw(int(szFill));
     stream<<num;
@@ -475,7 +478,12 @@ inline bool CircularCompareString(const string& A, const string& B)
 }
 
 
-
+inline std::string rgb_str(const size_t& r, const size_t& g, const size_t& b)
+{
+    return (utils::NumberToString(r, 2, '0', std::ios_base::hex, std::ios_base::dec)+
+            utils::NumberToString(g, 2, '0', std::ios_base::hex, std::ios_base::dec)+
+            utils::NumberToString(b, 2, '0', std::ios_base::hex, std::ios_base::dec));
+}
 
 /************************************************************************************************************************************************************************/
 // General helper functions.
