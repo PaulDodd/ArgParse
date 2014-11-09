@@ -65,6 +65,15 @@ class complex_greater_than : binary_function<std::complex<TVal>, std::complex<TV
 // std::vector class helper functions.
 /************************************************************************************************************************************************************************/
 #ifdef c_plus_plus_11
+
+template<class TVal> void vector_copy_assign(vector<TVal>& dest, const vector<TVal>& csrc)
+{
+    vector<TVal> src(csrc);
+    
+    dest.resize(src.size());
+    std::swap_ranges(src.begin(), src.end(), dest.begin());
+}
+
 template<class TVal>
 inline double mean(const vector<TVal>& v)
 {
