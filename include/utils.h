@@ -66,12 +66,19 @@ class complex_greater_than : binary_function<std::complex<TVal>, std::complex<TV
 /************************************************************************************************************************************************************************/
 #ifdef c_plus_plus_11
 
-template<class TVal> void vector_copy_assign(vector<TVal>& dest, const vector<TVal>& csrc)
+template<class TVal>
+inline void vector_copy_assign(vector< vector<TVal> >& dest, const vector< vector<TVal> >& src)
 {
-    vector<TVal> src(csrc);
-    
     dest.resize(src.size());
-    std::swap_ranges(src.begin(), src.end(), dest.begin());
+    for(size_t i = 0; i < src.size(); i++)
+    {
+        dest[i].resize(src[i].size());
+        for(size_t j = 0; j < src[i].size(); j++)
+        {
+            const TVal& element = src[i][j];
+            dest[i][j] = element;
+        }
+    }
 }
 
 template<class TVal>
