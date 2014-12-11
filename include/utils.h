@@ -308,6 +308,19 @@ TVal index_sum(const vector<TVal> v, const vector<size_t>& ndx)
 }
 
 
+template< class Key, class Value >
+std::map<Value, std::vector<Key> > preimage(const std::map<Key, Value>& m)
+{
+    std::map<Value, std::vector<Key> > preim;
+    for(typename std::map<Key,Value>::iterator miter = m.begin(); miter != m.end(); miter++)
+    {
+        std::pair<typename std::map<Value, std::vector<Key> >::iterator, bool> fiter = preim.insert(pair<Value, std::vector<Key> >(miter->second, std::vector<Key>()));
+        fiter.first->second.push_back(miter->first);
+    }
+    return preim;
+}
+
+
 
 /************************************************************************************************************************************************************************/
 // Some helpful math functions
