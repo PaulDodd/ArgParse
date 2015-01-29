@@ -192,7 +192,14 @@ inline void VectorAppend(vector<TVal>& v1, const vector<TVal>& v2)
     for(size_t i = 0; i < v2.size(); i++)
         v1.push_back(v2[i]);
 }
-
+template<class TVal>
+inline vector<TVal> VectorSlice(const vector<TVal>& v, const vector<size_t> i)
+{
+    vector<TVal> ret;
+    for(size_t s = 0; s < i.size(); s++)
+        ret.push_back(v[i[s]]);
+    return ret;
+}
 
 #ifdef c_plus_plus_11
 template<typename TVal, typename Compare = equal_to<TVal> >
