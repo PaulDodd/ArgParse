@@ -9,6 +9,24 @@
 using namespace std;
 using namespace utils;
 
+template<size_t n, size_t m, class InputParam, class OutputParam>
+class FunctionBase
+{
+    
+};
+
+template< size_t dim, class FunctionType >
+class CFindRoot
+{
+public:
+    CFindRoot() {}
+    ~CFindRoot() {}
+private:
+    vector<FunctionType> m_f;
+};
+
+
+
 class CTestSubCommand : public CCommandBase
 {
     public:
@@ -153,6 +171,8 @@ int main(int argc, const char * argv[])
         cout << "rnd "<< rnd() << ", "<< rnd2() << endl;
     
     maximum(vector<size_t>());
+    
+    auto func = [](float i, float j)->float{ return i*i + j - 1; };
     
     return TestProgram(argv[0], argc, argv).Main();
 }
