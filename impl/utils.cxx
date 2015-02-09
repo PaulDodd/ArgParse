@@ -3,28 +3,23 @@
 #include "utils.h"
 #include "CommandLine.h"
 #include "Stopwatch.h"
-
+#include "Numerics.h"
 
 
 using namespace std;
 using namespace utils;
 
-template<size_t n, size_t m, class InputParam, class OutputParam>
-class FunctionBase
-{
-    
-};
+double g[2];
 
-template< size_t dim, class FunctionType >
-class CFindRoot
-{
-public:
-    CFindRoot() {}
-    ~CFindRoot() {}
-private:
-    vector<FunctionType> m_f;
-};
 
+class quadratic : public FunctionBase<1, 1, double, double >
+{
+    double m_a, m_b, m_c;
+    public:
+        quadratic(double a, double b, double c) : m_a(a), m_b(b), m_c(c){}
+        double operator()(const double& x) const { return m_a*x * x + m_b*x + m_c; }
+//        vector<double> operator()(const vector<double>& x) { return vector<double>(); }
+};
 
 
 class CTestSubCommand : public CCommandBase
@@ -174,7 +169,19 @@ int main(int argc, const char * argv[])
     
     auto func = [](float i, float j)->float{ return i*i + j - 1; };
     
+    quadratic quad(1.0, 0.0, -1.0);
+    Derivative<double, quadratic> D;
+    auto derivative = std::bind(D, quad);
+    double dx = D(quad, 1.0);
+    
+
+
+    
+//    quad.AddInput(vf, vf2);
+    
     return TestProgram(argv[0], argc, argv).Main();
+    
+    
 }
 
 
