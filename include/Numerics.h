@@ -33,8 +33,11 @@ class FunctionBase
         typedef OutputParam OutputParamType;
     
         FunctionBase() {}
+    
+        Func
+    
         ~FunctionBase() {}
-        virtual OutputParam operator()  (const InputParam& ) const = 0;
+        virtual OutputParam operator()  (const InputParam& ) const { return OutputParam(); }
     
     public:
     // Define some helper functions here.

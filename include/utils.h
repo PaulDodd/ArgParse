@@ -998,8 +998,10 @@ inline typename std::enable_if< I < sizeof...(Ts), void >::type put (
                                                                         TVal& val,
                                                                         const size_t& Index)
 {
-    if(I == Index)
-        std::get<I>(t) = decltype(std::get<I>(t))(val);
+    typedef typename std::tuple_element< I, std::tuple< Ts... > >::type elem_type;
+    if(I == Index){
+        std::get<I>(t) = elem_type(val);
+        }
     else
         put< (I+1), TVal, Ts... > (t, val, Index);
 }

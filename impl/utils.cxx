@@ -3,22 +3,29 @@
 #include "utils.h"
 #include "CommandLine.h"
 #include "Stopwatch.h"
-#include "Numerics.h"
+#include "Numerical2.h"
 
 
 using namespace std;
 using namespace utils;
 
-double g[2];
 
 
-class quadratic : public FunctionBase<1, 1, double, double >
+
+class quadratic
 {
     double m_a, m_b, m_c;
     public:
         quadratic(double a, double b, double c) : m_a(a), m_b(b), m_c(c){}
         double operator()(const double& x) const { return m_a*x * x + m_b*x + m_c; }
-//        vector<double> operator()(const vector<double>& x) { return vector<double>(); }
+};
+
+class quadratic2d
+{
+    double m_a, m_b, m_c;
+public:
+    quadratic2d(double a, double b, double c) : m_a(a), m_b(b), m_c(c){}
+    double operator()(const vector<double>& x) const { return m_a*x[0] * x[1] + m_b*x[0] + m_c; }
 };
 
 
@@ -168,16 +175,30 @@ int main(int argc, const char * argv[])
     maximum(vector<size_t>());
     
     auto func = [](float i, float j)->float{ return i*i + j - 1; };
-    
+//
     quadratic quad(1.0, 0.0, -1.0);
-    Derivative<double, quadratic> D;
-    auto derivative = std::bind(D, quad);
-    double dx = D(quad, 1.0);
-    
+//    Derivative< double, quadratic > D;
+//    auto dx = std::bind(D, quad, std::placeholders::_1);
+//    double eval = dx(1.0);
 
 
+    Function<quadratic> func1(&quad);
+    Function<decltype(func)> func2(&func);
+    quadratic2d quad2d(1.0, 0.0, -1.0);
+    vector<double> x = {0.5, 0.5};
+    Function<quadratic2d> func3(&quad2d);
     
-//    quad.AddInput(vf, vf2);
+    cout << "func1 = " << func1(0.0) << " func2 = " << func2(2, 3) << " func3 = " << func3(x) <<endl;
+    
+    Derivative<double> Dfloat(0.01);
+    auto dfdx = std::bind(Dfloat, func1, 0, std::placeholders::_1);
+    auto dgdx = std::bind(Dfloat, func2, 0, std::placeholders::_1, std::placeholders::_2);
+    auto dgdy = std::bind(Dfloat, func2, 1, std::placeholders::_1, std::placeholders::_2);
+    
+    auto dhdx = std::bind(Dfloat, func3, 0, std::placeholders::_1);
+    
+    cout << "dfdx @ 1.0 = " << dfdx(1.0) << " dgdx @ (2, 3) = " << dgdx(2.0f, 3.0f)<< " dgdy @ (2, 3) = " << dgdy(2.0f, 3.0f) <<endl;
+    cout << "dhdx @ (0.5, 0.5) = " << dhdx(x) << endl;
     
     return TestProgram(argv[0], argc, argv).Main();
     
