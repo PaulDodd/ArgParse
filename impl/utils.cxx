@@ -190,19 +190,34 @@ int main(int argc, const char * argv[])
     
     cout << "func1 = " << func1(0.0) << " func2 = " << func2(2, 3) << " func3 = " << func3(x) <<endl;
     
-    Derivative<double> Dfloat(0.01);
-    auto dfdx = std::bind(Dfloat, func1, 0, std::placeholders::_1);
+    Derivative<double>  Ddouble(0.01);
+    Derivative<float>   Dfloat(0.01);
+    
+    auto dfdx = std::bind(Ddouble, func1, 0, std::placeholders::_1);
     auto dgdx = std::bind(Dfloat, func2, 0, std::placeholders::_1, std::placeholders::_2);
     auto dgdy = std::bind(Dfloat, func2, 1, std::placeholders::_1, std::placeholders::_2);
     
-    auto dhdx = std::bind(Dfloat, func3, 0, std::placeholders::_1);
+    auto dhdx = std::bind(Ddouble, func3, 0, std::placeholders::_1);
     
     cout << "dfdx @ 1.0 = " << dfdx(1.0) << " dgdx @ (2, 3) = " << dgdx(2.0f, 3.0f)<< " dgdy @ (2, 3) = " << dgdy(2.0f, 3.0f) <<endl;
     cout << "dhdx @ (0.5, 0.5) = " << dhdx(x) << endl;
     
+    
+    
+    // Partition Test:
+    vector<size_t> p1 = {0, 1, 1, 2}, p2 = {0, 1, 2, 2}, pbar;
+    pbar = math_util::PartitionUnion(p1, p2);
+    for(auto p : pbar)
+    {
+        cout << p << ", ";
+    }
+    
+    
+    
+    
+    
+    
     return TestProgram(argv[0], argc, argv).Main();
-    
-    
 }
 
 

@@ -37,10 +37,6 @@ class copy_from{};
 
 */
 
-
-
-
-
 template<class Precision>
 using VectorXX = Eigen::Matrix<Precision, Eigen::Dynamic, 1>;
 
@@ -120,23 +116,112 @@ class to_eigen_data_type<Precision, vector<Precision> > : public to_eigen_data_t
 //template<class Precision>
 //class to_eigen_data_type<Precision, Precision* > : public to_eigen_data_type_from_pointer<Precision, Precision* > {};
 //
+/*
+ **
+ ** Copy from eigen::vector to various data types.
+ ** Add support cases here.
+ **
+ */
+
+template<class Precision, class T>
+class copy_from
+{
+    public:
+        size_t copy(const VectorXX<Precision>& src, T&& dest) // trivially copyable. i.e. T = VectorXX<Precision>
+        {
+            dest = src;
+            return src.rows();
+        }
+};
+
+/* Specializations defined here */
+template<class Precision>
+class copy_from_floating_point
+{
+    public:
+        size_t copy(const VectorXX<Precision>& src, Precision&& dest)
+        {
+            if(src.rows()){
+                dest = src[0];
+                return 1;
+            }
+            return src.rows();
+        }
+};
+
+template<class Precision>
+class copy_from_iterable
+{
+    public:
+        template<class IteratorType>
+        size_t copy(const VectorXX<Precision>& src, IteratorType first, IteratorType last)
+        {
+            size_t i = 0;
+            while(first != last)
+            {
+                *first = src[i++];
+                first++;
+            }
+            
+            return i;
+        }
+};
+
+template<class Precision, class Container>
+class copy_from_stl : public copy_from_iterable<Precision>
+{
+    public:
+        size_t copy(const VectorXX<Precision>& src, Container&& dest)
+        {
+            typedef typename Container::iterator IteratorType;
+            return copy_from_iterable<Precision>::template copy<IteratorType>(src, dest.begin(), dest.end());
+        }
+};
+
+template<class Precision>
+class copy_from<Precision, double> : public copy_from_floating_point<double>{};
+
+template<class Precision>
+class copy_from<Precision, float> : public copy_from_floating_point<float>{};
+
+template<class Precision>
+class copy_from<Precision, std::vector<Precision> > : public copy_from_stl<Precision, std::vector<Precision> > {};
 
 
-template<class M, class... T>
+template<class Precision, class... T>
 class from_eigen_to_callable
 {
     tuple<T...> m_Tuple;
     public:
-        tuple<T...> get(M& v)
+        from_eigen_to_callable(const T& ...args)
         {
-            for(size_t i = 0; i < v.rows(); i++)
-                utils::put(m_Tuple, v[i], i);
+            m_Tuple = std::make_tuple(args...); // initialized tuple with a valid set of parameters.
+        }
+    
+        tuple<T...> get(VectorXX<Precision> v)
+        {
+            copy_element<0, T...>(v);
             return m_Tuple;
+        }
+    private:
+        template<size_t I = 0, class Type, class... Others>
+        typename enable_if< 0 == sizeof...(Others), void >::type copy_element(VectorXX<Precision> v)
+        {
+            copy_from<Precision, Type> c;
+            c.copy(v, std::forward<Type>(std::get<I>(m_Tuple))); // copy to the I-th tuple element.
+        }
+    
+        template<size_t I = 0, class Type, class... Others>
+        typename enable_if< 0 < sizeof...(Others), void >::type copy_element(VectorXX<Precision> v)
+        {
+            copy_from<Precision, Type> c;
+            size_t i = c.copy(v, std::forward<Type>(std::get<I>(m_Tuple))); // copy to the I-th tuple element.
+            VectorXX<Precision> next = v.block(i, 0, v.rows()-i, 1);
+            copy_element<I+1, Others...>(next);
         }
 };
 
 // end support cases.
-
 
 // This may be overkill:
 // Function base describes a function, f:R^n -> R^m
@@ -205,7 +290,7 @@ class Derivative : public OperatorBase< Precision >
             scalar_divides<ReturnType, Precision> div;
             to_eigen_data_type<Precision, InputParam...> picker;
             VectorXX<Precision> vargs = picker.get(args...);
-            from_eigen_to_callable<VectorXX<Precision>, InputParam... > callable;
+            from_eigen_to_callable<Precision, InputParam... > callable(args...);
 
             
             fx = f(args...);
@@ -242,22 +327,48 @@ public:
 //
 //
 //
-//class SolverBase
-//{
-//public:
-//    SolverBase() {}
-//    ~SolverBase() {}
-//};
-//
-//template< class FunctionType >
-//class CFindRoot : SolverBase
-//{
-//public:
-//    CFindRoot() {}
-//    ~CFindRoot() {}
-//private:
-//    // what do we need.
-//};
+class SolverBase
+{
+public:
+    SolverBase() {}
+    ~SolverBase() {}
+};
+
+template< class Precision >
+class CFindRoot : SolverBase
+{
+public:
+    CFindRoot(const Precision& tol, const size_t& maxIterations) : m_tol(tol), m_MaxIterations(maxIterations) { }
+    ~CFindRoot() {}
+    
+    template< class FunctionType, class... InputParam >
+    VectorXX<Precision> FixedPoint(Function<FunctionType>& g, InputParam... guess)
+    {
+        typedef typename std::result_of<Function<FunctionType>(InputParam...)>::type ReturnType;
+        VectorXX<Precision> result, ro, delta;
+        size_t i = 0;
+        from_eigen_to_callable<VectorXX<Precision>, InputParam... > callable;
+        to_eigen_data_type<Precision, ReturnType> output_picker;
+        to_eigen_data_type<Precision, InputParam...> input_picker;
+        
+        result = input_picker.get(guess...);
+        while(i++ < m_MaxIterations)
+        {
+            ReturnType x = f(callable.get(result));
+            ro = result;
+            result = output_picker.get(x);
+            if((result - ro).norm() < m_tol)
+            {
+                break;
+            }
+        }
+        return result;
+    }
+    
+private:
+    Precision m_tol;
+    size_t    m_MaxIterations;
+};
 
     
     

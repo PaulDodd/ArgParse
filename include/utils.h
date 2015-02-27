@@ -22,7 +22,6 @@ typedef long long int64;
 #define BOUNDED(x, xmin, xmax)          (x >= xmin && x <= xmax)
 
 
-
 #ifdef c_plus_plus_11
 namespace rng_util{
 
@@ -49,6 +48,121 @@ inline void seed_generator(RNG& generator, const size_t& n = 100)
 }
 
 }
+
+namespace math_util{
+
+template<class TVal>
+inline vector<TVal> vector_range(TVal first = 0, TVal last = 0, TVal inc = 1)
+{
+    vector<TVal> v;
+    for(TVal x = first; x < last; first+=inc) v.push_back(x);
+    return v;
+}
+
+template<class ListType, class RelationType>
+inline std::vector<size_t> RelationClasses(const ListType& set, const RelationType& R)
+{
+    // Computational Complexity: O(N^2 + N*P) N = set.size(),  P = # of partitions
+    // Memory Complexity: O(N)
+
+    std::vector<size_t> partitions(vector_range(0, set.size())); // move constructor makes this not so bad
+    for(size_t i = 0; i < set.size(); i++)
+    {
+        for(size_t j = i+1; j < set.size(); j++)
+        {
+            if(R(set[i], set[j]))
+            {
+                partitions[j] = partitions[i];
+            }
+        }
+    }
+    
+    std::set<size_t> s(partitions.begin(), partitions.end());
+    size_t ct = 0;
+    for(std::set<size_t>::iterator iter = set.begin(); iter != set.end(); iter++)
+    {
+        if(ct == *iter)
+        {
+            continue;
+            ct++;
+        }
+        
+        for(size_t i = 0; i < partitions.size(); i++)
+        {
+            if(partitions[i] == *iter)
+            {
+                partitions[i] = ct;
+            }
+        }
+        ct++;
+    }
+    
+    return partitions;
+};
+
+
+
+inline constexpr size_t invalid_id(){ return -1; }
+
+
+inline std::vector< std::vector<size_t> > PartionSets(const std::vector<size_t>& p)
+{
+    // Assuming that the partition ids in p are 0 based and consecutive
+    // Computational Complexity: O(N)
+    // Memory Complexity: O(N)
+    
+    std::vector< std::vector<size_t> > sets;
+    for(size_t i = 0; i < p.size(); i++)
+    {
+        if(!(p[i] < sets.size()))
+            while(!(p[i] < sets.size())) sets.push_back(vector<size_t>());
+        sets[p[i]].push_back(i);
+    }
+    return sets;
+}
+
+
+inline std::vector<size_t> PartitionUnion(const std::vector<size_t>& p1 , const std::vector<size_t>& p2)
+{
+    // [p] = (U[p]_{p2}) U (U[p]_{p1})
+    // Computational Complexity: O(N^2) worst case.
+    // Memory Complexity: O(N)
+    assert(p1.size() == p2.size());
+    std::vector<size_t> partition(p1.size(), invalid_id());
+    std::vector< std::vector<size_t> > sets1 = PartionSets(p1), sets2 = PartionSets(p2); // O(N)
+    size_t pid = 0;
+    for(size_t i = 0; i < p1.size(); i++)
+    {
+        if(partition[i] != invalid_id()) // we have already calculated the partition i belongs in.
+            continue;
+            
+        partition[i] = pid;
+        for( const size_t& x : sets1[p1[i]] )
+        {
+            for( const size_t& y : sets2[p2[x]] )
+            {
+                partition[y] = pid;
+            }
+        }
+        
+        for( const size_t& y : sets2[p2[i]] )
+        {
+            for( const size_t& x : sets1[p1[y]] )
+            {
+                partition[x] = pid;
+            }
+        }
+        pid++;
+    }
+    return partition;
+}
+
+
+
+
+}
+
+
 #endif
 
 /************************************************************************************************************************************************************************/
@@ -65,6 +179,7 @@ class complex_greater_than : binary_function<std::complex<TVal>, std::complex<TV
 // std::vector class helper functions.
 /************************************************************************************************************************************************************************/
 #ifdef c_plus_plus_11
+
 
 template<class TVal>
 inline void vector_copy_assign(vector< vector<TVal> >& dest, const vector< vector<TVal> >& src)
