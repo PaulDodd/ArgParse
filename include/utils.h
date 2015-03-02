@@ -55,7 +55,7 @@ template<class TVal>
 inline vector<TVal> vector_range(TVal first = 0, TVal last = 0, TVal inc = 1)
 {
     vector<TVal> v;
-    for(TVal x = first; x < last; first+=inc) v.push_back(x);
+    for(TVal x = first; x < last; x+=inc) v.push_back(x);
     return v;
 }
 
@@ -65,7 +65,7 @@ inline std::vector<size_t> RelationClasses(const ListType& set, const RelationTy
     // Computational Complexity: O(N^2 + N*P) N = set.size(),  P = # of partitions
     // Memory Complexity: O(N)
 
-    std::vector<size_t> partitions(vector_range(0, set.size())); // move constructor makes this not so bad
+    std::vector<size_t> partitions(vector_range<size_t>(0, set.size())); // move constructor makes this not so bad
     for(size_t i = 0; i < set.size(); i++)
     {
         for(size_t j = i+1; j < set.size(); j++)
@@ -79,12 +79,12 @@ inline std::vector<size_t> RelationClasses(const ListType& set, const RelationTy
     
     std::set<size_t> s(partitions.begin(), partitions.end());
     size_t ct = 0;
-    for(std::set<size_t>::iterator iter = set.begin(); iter != set.end(); iter++)
+    for(std::set<size_t>::const_iterator iter = s.cbegin(); iter != s.cend(); iter++)
     {
         if(ct == *iter)
         {
-            continue;
             ct++;
+            continue;
         }
         
         for(size_t i = 0; i < partitions.size(); i++)
@@ -102,7 +102,7 @@ inline std::vector<size_t> RelationClasses(const ListType& set, const RelationTy
 
 
 
-inline constexpr size_t invalid_id(){ return -1; }
+inline constexpr size_t invalid_id(){ return size_t(-1); }
 
 
 inline std::vector< std::vector<size_t> > PartionSets(const std::vector<size_t>& p)
