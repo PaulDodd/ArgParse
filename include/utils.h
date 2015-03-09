@@ -59,6 +59,28 @@ inline vector<TVal> vector_range(TVal first = 0, TVal last = 0, TVal inc = 1)
     return v;
 }
 
+template<typename TVal, typename Compare = less<TVal> >
+inline vector<TVal> Intersection(const vector<TVal>& v1, const vector<TVal>& v2)
+{
+    assert(std::is_sorted(v1.begin(), v1.end()) && std::is_sorted(v2.begin(), v2.end()));
+    vector<TVal> intersection(min(v1.size(), v2.size()));
+    Compare comp;
+    typename vector<TVal>::iterator it = std::set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), intersection.begin(), comp);
+    intersection.resize(it-intersection.begin());
+    return intersection;
+}
+
+template<class TVal>
+inline vector<TVal> Union(const vector<TVal>& v1, const vector<TVal>& v2)
+{
+    assert(std::is_sorted(v1.begin(), v1.end()) && std::is_sorted(v2.begin(), v2.end()));
+    vector<TVal> u(v1.size()+v2.size());
+    typename vector<TVal>::iterator it = std::set_union(v1.begin(), v1.end(), v2.begin(), v2.end(), u.begin());
+    u.resize(it-u.begin());
+    return u;
+}
+
+
 template<class ListType, class RelationType>
 inline std::vector<size_t> RelationClasses(const ListType& set, const RelationType& R)
 {
@@ -100,10 +122,7 @@ inline std::vector<size_t> RelationClasses(const ListType& set, const RelationTy
     return partitions;
 };
 
-
-
 inline constexpr size_t invalid_id(){ return size_t(-1); }
-
 
 inline std::vector< std::vector<size_t> > PartionSets(const std::vector<size_t>& p)
 {
@@ -131,29 +150,93 @@ inline std::vector<size_t> PartitionUnion(const std::vector<size_t>& p1 , const 
     std::vector<size_t> partition(p1.size(), invalid_id());
     std::vector< std::vector<size_t> > sets1 = PartionSets(p1), sets2 = PartionSets(p2); // O(N)
     size_t pid = 0;
+
     for(size_t i = 0; i < p1.size(); i++)
     {
-        if(partition[i] != invalid_id()) // we have already calculated the partition i belongs in.
-            continue;
-            
-        partition[i] = pid;
-        for( const size_t& x : sets1[p1[i]] )
+        std::queue<size_t> worklist1, worklist2;
+        if(partition[i] == invalid_id()) // seeing this partition for the first time.
         {
-            for( const size_t& y : sets2[p2[x]] )
-            {
-                partition[y] = pid;
-            }
+            worklist1.push(i);
+            worklist2.push(i);
+            partition[i] = pid++;
         }
         
-        for( const size_t& y : sets2[p2[i]] )
+        while(!worklist1.empty() || !worklist2.empty())
         {
-            for( const size_t& x : sets1[p1[y]] )
+            if(!worklist1.empty())
             {
-                partition[x] = pid;
+                size_t x = worklist1.front(); worklist1.pop();
+                for(size_t y : sets1[p1[x]])
+                {
+                    if(partition[y] == invalid_id())
+                    {
+                       partition[y] = partition[i];
+                       worklist2.push(y);
+                    }
+                    else if (partition[y] < partition[i] || partition[i] < partition[y])
+                    {
+                        cout << "logical error!" << endl;
+                    }
+                }
+            }
+            if(!worklist2.empty())
+            {
+                size_t x = worklist2.front(); worklist2.pop();
+                for(size_t y : sets2[p2[x]])
+                {
+                    if(partition[y] == invalid_id())
+                    {
+                        partition[y] = partition[i];
+                        worklist1.push(y);
+                    }
+                    else if (partition[y] < partition[i] || partition[i] < partition[y])
+                    {
+                        cout << "logical error!" << endl;
+                    }
+                }
             }
         }
-        pid++;
     }
+
+/*
+    for(size_t i = 0; i < p1.size(); i++)
+    {
+        if(partition[i] == invalid_id()) // seeing this partition for the first time.
+        {
+            partition[i] = pid++;
+            vector<size_t> result;
+            queue<size_t> list12, list21;
+            
+            for( const size_t& x : sets1[p1[i]] )
+            {
+                result = Union(sets2[p2[x]], result);
+            }
+            
+            for( const size_t& y : sets2[p2[i]] )
+                result = Union(sets1[p1[y]], result);
+            
+            for(size_t k : result)
+                partition[k] = partition[i];
+
+        }
+    }
+********* try try again ******************
+    for(size_t i = 0; i < p1.size(); i++)
+    {
+        if(partition[i] == invalid_id()) // seeing this partition for the first time.
+        {
+            partition[i] = pid++;        
+            for( const size_t& x : sets1[p1[i]] )
+                for( const size_t& y : sets2[p2[x]] )
+                    partition[y] = partition[i];
+            
+            for( const size_t& y : sets2[p2[i]] )
+                for( const size_t& x : sets1[p1[y]] )
+                    partition[x] = partition[i];
+        }
+    }
+    */
+    
     return partition;
 }
 
@@ -164,6 +247,17 @@ inline std::vector<size_t> PartitionUnion(const std::vector<size_t>& p1 , const 
 
 
 #endif
+
+template<class TVal>
+class TrueFunction : public std::binary_function<TVal, TVal, bool>
+{
+    using result_type = typename std::binary_function<TVal, TVal, bool>::result_type;
+    using first_argument_type = typename std::binary_function<TVal, TVal, bool>::first_argument_type;
+    using second_argument_type = typename std::binary_function<TVal, TVal, bool>::second_argument_type;
+    public:
+        result_type operator()(const first_argument_type&, const second_argument_type& ){ return true; }
+};
+
 
 /************************************************************************************************************************************************************************/
 // std::complex class helper functions.
@@ -179,8 +273,6 @@ class complex_greater_than : binary_function<std::complex<TVal>, std::complex<TV
 // std::vector class helper functions.
 /************************************************************************************************************************************************************************/
 #ifdef c_plus_plus_11
-
-
 template<class TVal>
 inline void vector_copy_assign(vector< vector<TVal> >& dest, const vector< vector<TVal> >& src)
 {
@@ -222,6 +314,63 @@ inline double std_dev(const vector<TVal>& v)
     return mean_std_dev(v).second;
 }
 #endif
+
+
+template <class ItemType, class Compare = less<ItemType> >
+class circular_list_equal_to
+{
+    Compare     m_less_than;
+
+    template<class ListType>
+    inline bool COMP(const ListType& A, const ListType& B, const size_t& n, size_t& i, size_t& j)
+    {
+        bool bComp = true;
+        for(size_t k = 0; k < n && bComp; k++) {
+            if(m_less_than(A[(i+k)%n], B[(j+k)%n])) {
+                j += k+1;
+                bComp = false;
+            }
+            else if(m_less_than(B[(j+k)%n], A[(i+k)%n])) {
+                i += k+1;
+                bComp = false;
+            }
+        }
+        return bComp;
+    }
+    
+    public:
+        circular_list_equal_to(Compare lt = Compare()) : m_less_than(lt){ }
+
+        template<class ListType>
+        bool operator()(const ListType& A, const ListType& B, const size_t& n)
+        {
+            bool bEqual = false, bContinue = true;
+            size_t i = 0, j = 0;
+            vector<size_t> DA, DB;
+            while( bContinue ) {
+                bEqual = COMP( A, B, n, i, j);
+                bContinue = i < n && j < n && !bEqual;
+            }
+            return bEqual;
+        }
+};
+
+typedef circular_list_equal_to<char> circular_string_equal_to;
+
+
+//inline bool CircularCompareString(const string& A, const string& B)
+//{
+//    bool bEqual = false, bContinue = A.length() == B.length();
+//    size_t i = 0, j = 0, n = A.length();
+//    vector<size_t> DA, DB;
+//    while( bContinue )
+//    {
+//        bEqual = COMP(A, B, A.length(), i, j);
+//        bContinue = i < n && j < n && !bEqual;
+//    }
+//    return bEqual;
+//}
+
 
 template<class TVal>
 inline size_t argmin(const vector<TVal>& v)
@@ -353,19 +502,7 @@ inline bool PushUnique(vector<TVal>& v, const TVal& elem)
     return bPushedElem;
 }
 
-template<typename TVal, typename Compare = equal_to<TVal> >
-inline vector<TVal> Intersection(const vector<TVal>& v1, const vector<TVal>& v2)
-{
-    vector<TVal> intersection;
-    
-    for(size_t i = 0; i < v1.size(); i++)
-    {
-        if(IsInVec<TVal, Compare>(v2, v1[i]))
-            PushUnique(intersection, v1[i]); // no repeats allowed.
-    }
-    
-    return intersection;
-}
+
 #else
 
 template< typename TVal >
@@ -593,40 +730,6 @@ inline string InvertString(const string& str)
     for(size_t i = 0; i < n; i++)
         invert += str[n-1-i];
     return invert;
-}
-
-inline bool COMP(const string& A, const string& B, size_t& i, size_t& j)
-{
-    bool bComp = true;
-    size_t n = A.length();
-    for(size_t k = 0; k < n && bComp; k++)
-    {
-        if(A[(i+k)%n] < B[(j+k)%n])
-        {
-            j += k+1;
-            bComp = false;
-        }
-        else if (A[(i+k)%n] > B[(j+k)%n])
-        {
-            i += k+1;
-            bComp = false;
-        }
-    }
-    return bComp;
-}
-
-inline bool CircularCompareString(const string& A, const string& B)
-{
-    bool bEqual = false, bContinue = A.length() == B.length();
-    size_t i = 0, j = 0, n = A.length();
-    vector<size_t> DA, DB;
-    while( bContinue )
-    {
-        bEqual = COMP(A, B, i, j);
-        bContinue = i < n && j < n && !bEqual;
-    }
-    
-    return bEqual;
 }
 
 

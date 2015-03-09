@@ -141,14 +141,14 @@ int main(int argc, const char * argv[])
     }
     
 
+    circular_string_equal_to eq;
+    cout << str1 << " == " << str2 << " : " << boolalpha << eq(str1, str2, str1.length()) << endl;
+    cout << str1 << " == " << str3 << " : " << boolalpha << eq(str1, str3, str1.length()) << endl;
+    cout << str2 << " == " << str3 << " : " << boolalpha << eq(str2, str3, str2.length()) << endl;
     
-    cout << str1 << " == " << str2 << " : " << boolalpha << CircularCompareString(str1, str2) << endl;
-    cout << str1 << " == " << str3 << " : " << boolalpha << CircularCompareString(str1, str3) << endl;
-    cout << str2 << " == " << str3 << " : " << boolalpha << CircularCompareString(str2, str3) << endl;
-    
-    cout << str1 << " == " << str4 << " : " << boolalpha << CircularCompareString(str1, str4) << endl;
-    cout << str2 << " == " << str4 << " : " << boolalpha << CircularCompareString(str2, str4) << endl;
-    cout << str3 << " == " << str4 << " : " << boolalpha << CircularCompareString(str3, str4) << endl;
+    cout << str1 << " == " << str4 << " : " << boolalpha << eq(str1, str4, str4.length()) << endl;
+    cout << str2 << " == " << str4 << " : " << boolalpha << eq(str2, str4, str4.length()) << endl;
+    cout << str3 << " == " << str4 << " : " << boolalpha << eq(str3, str4, str4.length()) << endl;
     
     
     cout << "10 = "<< NumberToString(10, 4, '0') << endl;
