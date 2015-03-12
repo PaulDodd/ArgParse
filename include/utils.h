@@ -143,7 +143,6 @@ inline std::vector< std::vector<size_t> > PartionSets(const std::vector<size_t>&
 
 inline std::vector<size_t> PartitionUnion(const std::vector<size_t>& p1 , const std::vector<size_t>& p2)
 {
-    // [p] = (U[p]_{p2}) U (U[p]_{p1})
     // Computational Complexity: O(N^2) worst case.
     // Memory Complexity: O(N)
     assert(p1.size() == p2.size());
@@ -197,46 +196,7 @@ inline std::vector<size_t> PartitionUnion(const std::vector<size_t>& p1 , const 
             }
         }
     }
-
-/*
-    for(size_t i = 0; i < p1.size(); i++)
-    {
-        if(partition[i] == invalid_id()) // seeing this partition for the first time.
-        {
-            partition[i] = pid++;
-            vector<size_t> result;
-            queue<size_t> list12, list21;
-            
-            for( const size_t& x : sets1[p1[i]] )
-            {
-                result = Union(sets2[p2[x]], result);
-            }
-            
-            for( const size_t& y : sets2[p2[i]] )
-                result = Union(sets1[p1[y]], result);
-            
-            for(size_t k : result)
-                partition[k] = partition[i];
-
-        }
-    }
-********* try try again ******************
-    for(size_t i = 0; i < p1.size(); i++)
-    {
-        if(partition[i] == invalid_id()) // seeing this partition for the first time.
-        {
-            partition[i] = pid++;        
-            for( const size_t& x : sets1[p1[i]] )
-                for( const size_t& y : sets2[p2[x]] )
-                    partition[y] = partition[i];
-            
-            for( const size_t& y : sets2[p2[i]] )
-                for( const size_t& x : sets1[p1[y]] )
-                    partition[x] = partition[i];
-        }
-    }
-    */
-    
+   
     return partition;
 }
 
@@ -891,6 +851,20 @@ inline TVal peek_at_file(const std::string& path, string delim = ",", size_t ski
     else{
         return TVal();
     }
+}
+
+template<class TVal>
+inline bool dump_vector(const string& path, const vector<TVal>& v)
+{
+    ofstream f(path.c_str());
+    if(f.is_open())
+    {
+        for(TVal i : v)
+            f << i << endl;
+        f.close();
+        return true;
+    }
+    return false;
 }
 
 
