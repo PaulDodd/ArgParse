@@ -211,11 +211,31 @@ int main(int argc, const char * argv[])
     {
         cout << p << ", ";
     }
+    cout << endl;
     
+    vector< vector<size_t> > v_access_check(5, vector<size_t>(5));
     
+    for(size_t i = 0; i < 5; i++)
+        for(size_t j = 0; j < 5; j++)
+            v_access_check[i][j] = i*5 + j;
     
+    access< vector< vector<size_t> >, size_t > accessor;
+    cout << "v[3][3] = " << accessor(v_access_check, size_t(3), size_t(3)) << endl;
+//    accessor(v_access_check, size_t(3), size_t(3)) = 1;
+    cout << "v[3][3] = " << accessor(v_access_check, size_t(3), size_t(3)) << endl;
     
+    vector<size_t> comb(3, 0); comb[1] = 1; comb[2] = 2;
     
+    for(size_t i = 0; i < comb.size(); i++)
+        cout << comb[i] << " ";
+    cout << endl;
+    
+    while(math_util::next_combination(comb.rbegin(), comb.rend(), 5))
+    {
+        for(size_t i = 0; i < comb.size(); i++)
+            cout << comb[i] << " ";
+        cout << endl;
+    }
     
     return TestProgram(argv[0], argc, argv).Main();
 }

@@ -200,7 +200,29 @@ inline std::vector<size_t> PartitionUnion(const std::vector<size_t>& p1 , const 
     return partition;
 }
 
-
+template<class ReverseIterator>
+inline bool next_combination(ReverseIterator first, ReverseIterator last, int N)
+{
+    //    returns next combination.
+    if(N == 0 || first == last)
+        return false;
+    
+    int i = 0;
+    ReverseIterator begin = first;
+    while(first != last && i < N)
+    {
+        ReverseIterator it = first++;
+        if((++(*it)) < (N - i)) {
+            while(it != begin) {
+                first = it--;
+                *it = *first + 1;
+            }
+            return true;
+        }
+        i++;
+    }
+    return false;
+}
 
 
 }
@@ -217,6 +239,30 @@ class TrueFunction : public std::binary_function<TVal, TVal, bool>
     public:
         result_type operator()(const first_argument_type&, const second_argument_type& ){ return true; }
 };
+
+template<class ListType, class ReturnType > // put here for template specialization.
+class access
+{
+    template<class SubListType, class... IndexList>
+    typename enable_if<sizeof...(IndexList) == 0,  ReturnType >::type& get_ith(SubListType& list, size_t I, IndexList... Others) const
+    {
+        return list[I];
+    }
+    
+    template<class SubListType, class... IndexList>
+    typename enable_if< 0 < sizeof...(IndexList),  ReturnType >::type& get_ith(SubListType& list, size_t I, IndexList... Others) const
+    {
+        return get_ith(list[I], Others...);
+    }
+    
+    public:
+//        template<class... IndexList>
+//        ReturnType& operator () (ListType& list, size_t I, IndexList... Others) const { return get_ith< ReturnType >(list, I, Others...); }
+
+        template<class... IndexList>
+        const ReturnType& operator () (ListType& list, size_t I, IndexList... Others) const {  return get_ith(list, I, Others...); }
+};
+
 
 
 /************************************************************************************************************************************************************************/
