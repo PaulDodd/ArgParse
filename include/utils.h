@@ -230,14 +230,18 @@ inline bool next_combination(ReverseIterator first, ReverseIterator last, int N)
 
 #endif
 
-template<class TVal>
-class TrueFunction : public std::binary_function<TVal, TVal, bool>
+class TrueFunction
 {
-    using result_type = typename std::binary_function<TVal, TVal, bool>::result_type;
-    using first_argument_type = typename std::binary_function<TVal, TVal, bool>::first_argument_type;
-    using second_argument_type = typename std::binary_function<TVal, TVal, bool>::second_argument_type;
     public:
-        result_type operator()(const first_argument_type&, const second_argument_type& ){ return true; }
+        template<typename... TVals>
+        bool operator()(TVals...){ return true; }
+};
+
+class FalseFunction
+{
+    public:
+        template<typename... TVals>
+        bool operator()(TVals...){ return false; }
 };
 
 template<class ListType, class ReturnType > // put here for template specialization.
