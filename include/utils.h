@@ -917,6 +917,24 @@ inline bool dump_vector(const string& path, const vector<TVal>& v)
     return false;
 }
 
+template<class TVal>
+inline bool dump_txt(const string& path, const vector< vector<TVal> > & v, string delim = ",")
+{
+    ofstream f(path.c_str());
+    if(f.is_open())
+    {
+        for(const vector<TVal>& i : v)
+        {
+            for(const TVal& j : i)
+                f << j << delim;
+            f << endl;
+        }
+        f.close();
+        return true;
+    }
+    return false;
+}
+
 
 //#endif
 
