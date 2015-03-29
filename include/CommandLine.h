@@ -6,6 +6,18 @@
 //  Copyright (c) 2013 Paul Dodd. All rights reserved.
 //
 
+
+//
+// Features to add:
+//
+// 1.   Default callback and/or Initialized callback -- Arguments are able to take in call backs (i.e. lambda funcitons) that could allow them to manipulate the
+//      value of the argument after initialization or if no value is suppled. allows for a wider range of default behavior
+//
+// 2.   Template specializations??
+
+
+
+
 #ifndef SharedFolding_CommandLine_h
 #define SharedFolding_CommandLine_h
 
