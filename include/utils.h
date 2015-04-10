@@ -48,6 +48,7 @@ inline void seed_generator(RNG& generator, const size_t& n = 100)
 }
 
 }
+#endif
 
 namespace math_util{
 
@@ -59,12 +60,12 @@ inline vector<TVal> vector_range(TVal first = 0, TVal last = 0, TVal inc = 1)
     return v;
 }
 
-template<typename TVal, typename Compare = less<TVal> >
+template<typename TVal >
 inline vector<TVal> Intersection(const vector<TVal>& v1, const vector<TVal>& v2)
 {
     assert(std::is_sorted(v1.begin(), v1.end()) && std::is_sorted(v2.begin(), v2.end()));
     vector<TVal> intersection(min(v1.size(), v2.size()));
-    Compare comp;
+    less<TVal> comp; // TODO: extract this.
     typename vector<TVal>::iterator it = std::set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), intersection.begin(), comp);
     intersection.resize(it-intersection.begin());
     return intersection;
@@ -122,6 +123,7 @@ inline std::vector<size_t> RelationClasses(const ListType& set, const RelationTy
     return partitions;
 };
 
+#ifdef c_plus_plus_11
 inline constexpr size_t invalid_id(){ return size_t(-1); }
 
 inline std::vector< std::vector<size_t> > PartionSets(const std::vector<size_t>& p)
@@ -224,12 +226,12 @@ inline bool next_combination(ReverseIterator first, ReverseIterator last, int N)
     return false;
 }
 
-
+#endif
 }
 
 
-#endif
 
+#ifdef c_plus_plus_11
 class TrueFunction
 {
     public:
@@ -267,6 +269,16 @@ class access
         const ReturnType& operator () (ListType& list, size_t I, IndexList... Others) const {  return get_ith(list, I, Others...); }
 };
 
+#else
+class TrueFunction
+{
+    public:
+        template<typename TVal>
+        bool operator()(TVal, TVal){ return true; }
+};
+
+
+#endif
 
 
 /************************************************************************************************************************************************************************/
@@ -809,7 +821,7 @@ inline bool     is_directory(const dirent* dir) {
     return (dir->d_type == DT_DIR);
 }
 
-//#ifdef c_plus_plus_11
+//
 inline bool file_exists (const std::string& name)
 {
     if (FILE *file = fopen(name.c_str(), "r"))
@@ -902,7 +914,7 @@ inline TVal peek_at_file(const std::string& path, string delim = ",", size_t ski
         return TVal();
     }
 }
-
+#ifdef c_plus_plus_11
 template<class TVal>
 inline bool dump_vector(const string& path, const vector<TVal>& v)
 {
@@ -934,9 +946,7 @@ inline bool dump_txt(const string& path, const vector< vector<TVal> > & v, strin
     }
     return false;
 }
-
-
-//#endif
+#endif
 
 // TODO:
 //  Clean up this function to make this work more expectedly.
