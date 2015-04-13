@@ -102,7 +102,7 @@ inline std::vector<size_t> RelationClasses(const ListType& set, const RelationTy
     
     std::set<size_t> s(partitions.begin(), partitions.end());
     size_t ct = 0;
-    for(std::set<size_t>::const_iterator iter = s.cbegin(); iter != s.cend(); iter++)
+    for(std::set<size_t>::iterator iter = s.begin(); iter != s.end(); iter++)
     {
         if(ct == *iter)
         {
