@@ -42,7 +42,7 @@ inline void seed_generator(RNG& generator, const size_t& n = 100)
 //    for(size_t i = 0; i < n; i++)
 //        cout << seeds[i] << " ";
 //    cout << endl;
-    
+
     seed_seq seq(seeds.begin(), seeds.end());
     generator.seed(seq);
 }
@@ -99,7 +99,7 @@ inline std::vector<size_t> RelationClasses(const ListType& set, const RelationTy
             }
         }
     }
-    
+
     std::set<size_t> s(partitions.begin(), partitions.end());
     size_t ct = 0;
     for(std::set<size_t>::iterator iter = s.begin(); iter != s.end(); iter++)
@@ -109,7 +109,7 @@ inline std::vector<size_t> RelationClasses(const ListType& set, const RelationTy
             ct++;
             continue;
         }
-        
+
         for(size_t i = 0; i < partitions.size(); i++)
         {
             if(partitions[i] == *iter)
@@ -119,7 +119,7 @@ inline std::vector<size_t> RelationClasses(const ListType& set, const RelationTy
         }
         ct++;
     }
-    
+
     return partitions;
 };
 
@@ -131,7 +131,7 @@ inline std::vector< std::vector<size_t> > PartionSets(const std::vector<size_t>&
     // Assuming that the partition ids in p are 0 based and consecutive
     // Computational Complexity: O(N)
     // Memory Complexity: O(N)
-    
+
     std::vector< std::vector<size_t> > sets;
     for(size_t i = 0; i < p.size(); i++)
     {
@@ -161,7 +161,7 @@ inline std::vector<size_t> PartitionUnion(const std::vector<size_t>& p1 , const 
             worklist2.push(i);
             partition[i] = pid++;
         }
-        
+
         while(!worklist1.empty() || !worklist2.empty())
         {
             if(!worklist1.empty())
@@ -198,7 +198,7 @@ inline std::vector<size_t> PartitionUnion(const std::vector<size_t>& p1 , const 
             }
         }
     }
-   
+
     return partition;
 }
 
@@ -208,7 +208,7 @@ inline bool next_combination(ReverseIterator first, ReverseIterator last, int N)
     //    returns next combination.
     if(N == 0 || first == last)
         return false;
-    
+
     int i = 0;
     ReverseIterator begin = first;
     while(first != last && i < N)
@@ -254,13 +254,13 @@ class access
     {
         return list[I];
     }
-    
+
     template<class SubListType, class... IndexList>
     typename enable_if< 0 < sizeof...(IndexList),  ReturnType >::type& get_ith(SubListType& list, size_t I, IndexList... Others) const
     {
         return get_ith(list[I], Others...);
     }
-    
+
     public:
 //        template<class... IndexList>
 //        ReturnType& operator () (ListType& list, size_t I, IndexList... Others) const { return get_ith< ReturnType >(list, I, Others...); }
@@ -359,7 +359,7 @@ class circular_list_equal_to
         }
         return bComp;
     }
-    
+
     public:
         circular_list_equal_to(Compare lt = Compare()) : m_less_than(lt){ }
 
@@ -423,7 +423,7 @@ inline size_t argmax(const vector<TVal>& v)
 //        throw runtime_error("Empty List encountered in utils::argmax.");
     if(!v.size())
         return 0;
-    
+
     TVal m = v[0];
     size_t mndx = 0;
     for(size_t i = 1; i < v.size(); i++){
@@ -520,7 +520,7 @@ inline bool PushUnique(vector<TVal>& v, const TVal& elem)
         v.push_back(elem);
         bPushedElem = true;
     }
-    
+
     return bPushedElem;
 }
 
@@ -559,7 +559,7 @@ inline bool PushUnique(vector<TVal>& v, const TVal& elem)
         v.push_back(elem);
         bPushedElem = true;
     }
-    
+
     return bPushedElem;
 }
 
@@ -567,13 +567,13 @@ template<typename TVal >
 inline vector<TVal> Intersection(const vector<TVal>& v1, const vector<TVal>& v2)
 {
     vector<TVal> intersection;
-    
+
     for(size_t i = 0; i < v1.size(); i++)
     {
         if(IsInVec<TVal>(v2, v1[i]))
             PushUnique(intersection, v1[i]); // no repeats allowed.
     }
-    
+
     return intersection;
 }
 
@@ -708,7 +708,7 @@ inline vector<string> SplitString(const string& str, const string& splitStr, boo
     size_t pos = 0; size_t prevPos = 0;
     string temp;
     bool bMore = (str.length() != 0);
-    
+
     if(str.length() == 1)
     {
         strvec.push_back((str == splitStr) ? "" : str);
@@ -719,10 +719,10 @@ inline vector<string> SplitString(const string& str, const string& splitStr, boo
         cout << "ERROR! Must use a valid delimiter. " << endl;
         throw(0xfffff);
     }
-    
+
     while (bMore) {
         pos = str.find(splitStr, prevPos);
-        
+
         if ( pos == string::npos)
         {
             pos = str.length();
@@ -734,10 +734,10 @@ inline vector<string> SplitString(const string& str, const string& splitStr, boo
             prevPos = pos + 1; // skip the extra delim.
             continue;
         }
-        
+
         temp = str.substr((prevPos), (pos-prevPos));
         // cout << "sub string: "<< temp << " @  ("<< prevPos << ", " << pos <<")" << endl;
-        
+
         prevPos = pos + 1;
         strvec.push_back(bStripWhiteSpace ? StripWhiteSpace(temp) : temp);
     }
@@ -776,7 +776,7 @@ inline bool IsInList(TVal& query, UVal& list, size_t n = 0)
         if(query == list[i])
             return true;
     }
-    
+
     return false;
 }
 
@@ -836,6 +836,7 @@ template <class TVal>
 inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, string delim = ",", const size_t& reserve = 0, const size_t& skiprows = 0 , const size_t& stoprow = 0, const size_t& axis = 1)
 {
     // TODO: check for valid axis.
+    std::cout << "load_txt - N path = "<< path << std::endl;
     ifstream txtfile;
     txtfile.open(path.c_str(), ios_base::in);
     if(txtfile)
@@ -844,15 +845,18 @@ inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, stri
         size_t ln = 0, lnread = 0;
         while (std::getline(txtfile, line, '\n'))
         {
+            if(ln % 10000 == 0)
+                std::cout << "read "<< ln << " lines!" << std::endl;
             ln++;
             if(ln-1 < skiprows) continue;
             else if (stoprow && ln > stoprow) break;
-            
+
             lnread++;
             vector<string> split = SplitString(line, delim);
 
             if(data.size() == 0 && axis == 1)
             {
+                data.reserve(split.size());
                 for(size_t i = 0; i < split.size(); i++)
                 {
                     vector<TVal> temp;
@@ -861,10 +865,23 @@ inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, stri
                         data[i].reserve(reserve);
                 }
             }
+            if(axis == 1 &&  split.size() != data.size())
+            {
+                std::cout << "error @ line "<< ln <<" split size = "<< split.size() << ", data size = "<< data.size() << std::endl;
+                if( split.size() < data.size())
+                {
+                    std::cout << "warning!! skipping line "<< ln << std::endl;
+                    continue;
+                }
+                else
+                {
+                    std::cout << "warning!! trucating the extra columns!" << std::endl;
+                }
+            }
             vector<TVal> tempAxis0;
             for(size_t i = 0; i < split.size(); i++)
             {
-                if(axis == 1)
+                if(axis == 1 && i < data.size())
                 {
                     TVal temp;
                     stringstream ss;
@@ -890,8 +907,10 @@ inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, stri
     }
     else
     {
+        std::cout << "load_txt - X (false)" << std::endl;
         return false;
     }
+    std::cout << "load_txt - X (true)" << std::endl;
     return true;
 }
 
@@ -959,15 +978,15 @@ inline vector<string> FindAllPaths(string SearchPath) /*  __uint8_t FileTypeRest
     string parent = path_part(SearchPath);
     string wildCard = file_part(SearchPath);
     vector<string> searchPattern = SplitString(wildCard, WILDCARD_STR);
-        
+
     dirc = opendir(parent.c_str());
-    
+
     if(!dirc)
     {
         cerr << " Could not open : " << parent <<endl;
         return paths;
     }
-    
+
     while((dirNav = readdir(dirc)) && dirc)
     {
         string name(dirNav->d_name);
@@ -980,7 +999,7 @@ inline vector<string> FindAllPaths(string SearchPath) /*  __uint8_t FileTypeRest
         }
         if (bAdd) paths.push_back((parent + name));
     }
-    
+
     return paths;
 }
 
@@ -1004,7 +1023,7 @@ inline bool CompareFilesLineByLine(string path1, string path2, bool bPrintOut = 
     file1.open(path1.c_str()); file2.open(path2.c_str());
     int64 ctLinesMatch = 0;
     int64 ctLinesDiff = 0;
-    
+
     while(!file1.eof() || (!file2.eof() && bPrintOut))
     {
         char line1[3200];  // 3200 characters, Too small?
@@ -1013,9 +1032,9 @@ inline bool CompareFilesLineByLine(string path1, string path2, bool bPrintOut = 
         file2.getline(&line2[0], 3200, '\n');
         string testline1 = line1;
         string testline2 = line2;
-        
-        
-        
+
+
+
         if(strcmp(testline1.c_str(), testline2.c_str()))
         {
             if(bPrintOut)
@@ -1023,31 +1042,31 @@ inline bool CompareFilesLineByLine(string path1, string path2, bool bPrintOut = 
                 cout<<"Lines are different: "<<endl;
                 cout<<"file 1 : "<< testline1 << endl <<"file 2 : "<<  testline2 <<endl;
                 bcomp = false;
-                
+
                 cout << endl<< " Print next line mismatch (y/n)? " ;
                 cin>>yes;
-                
+
                 if(strcmp(&yes, "y"))
                     bPrintOut = true;
-                else 
+                else
                     bPrintOut = false;
             }
             ctLinesDiff++;
-            
-            
+
+
         }
         else {
             ctLinesMatch ++;
         }
 
     }
-    
+
     cout    << " lines Match : " << ctLinesMatch<<endl
             << " lines Different: " << ctLinesDiff<<endl;
-    
-    
+
+
     return bcomp;
-    
+
 
 }
 
@@ -1060,85 +1079,85 @@ inline bool CompareFiles(string Path1, string Path2, bool bPrintOut = false )
     long int szFile1, szFile2, szSmall;
     szFile1 = 0; szFile2 = 0; szBuffer = 1024*1024; // 1MB buffer
     bool ret_val = true;
-    
+
     pFile1 = fopen(Path1.c_str(), "r");
     pFile2 = fopen(Path2.c_str(), "r");
-    
+
     szFile1 = GetSizeOfFile(pFile1);
     szFile2 = GetSizeOfFile(pFile2);
     szSmall = (szFile1 <= szFile2) ? szFile1 : szFile2;
-    
+
     if(szFile1 && szFile2)
     {
         buf1 = (unsigned char*) malloc(szBuffer);
         buf2 = (unsigned char*) malloc(szBuffer);
         if(!buf1 || !buf2) return false;
-        
+
         memset(buf1, 0x00, szBuffer);
         memset(buf2, 0x00, szBuffer);
-        
-        do 
+
+        do
         {
 
             ctRead1 = 0; ctRead2 = 0;
             ctRead1 = fread(buf1, 1, szBuffer, pFile1);
             ctRead2 = fread(buf2, 1, szBuffer, pFile2);
             ctSmall = (ctRead1 < ctRead2) ? ctRead1 : ctRead2;
-            
+
             if(memcmp(buf1, buf2, ctSmall) != 0) // there is a difference in the two buffers.
             {
                 size_t i = 0; char yes;
-                while (buf1[i] == buf2[i]) i++; // find the position where the files are defferent.  
-                
-                ctBytesMisMatch += ctSmall - i; // Could over estimate the value of mis matched bytes.  
-                
+                while (buf1[i] == buf2[i]) i++; // find the position where the files are defferent.
+
+                ctBytesMisMatch += ctSmall - i; // Could over estimate the value of mis matched bytes.
+
                 while(bPrintOut && buf1[i] != buf2[i])
                 {
                     cout << " Mismatch occured at byte: " << ctTotalRead + i<<endl;
                     cout << " File 1: ";
-                    while (buf1[i] != '\n' && i < szBuffer) // print out buffer 1.  
+                    while (buf1[i] != '\n' && i < szBuffer) // print out buffer 1.
                         cout << buf1[i++];
                     cout << buf1[i++];
                     cout << " File 2: ";
-                    while (buf2[i] != '\n' && i < szBuffer) // print out buffer 1.  
+                    while (buf2[i] != '\n' && i < szBuffer) // print out buffer 1.
                         cout << buf2[i++];
                     cout << buf2[i++];
-                    
+
                     cout << endl<< " Print next line mismatch (y/n)? " ;
                     cin>>yes;
-                    
+
                     if(strcmp(&yes, "y"))
                         bPrintOut = true;
-                    else 
+                    else
                         bPrintOut = false;
                 }
-                    
+
             }
             else {
                 ctBytesMatch += ctSmall;
             }
-            
+
             ctTotalRead += ctSmall;
-            
+
         }while(ctTotalRead < size_t(szSmall) && ctRead1 && ctRead2);
-        
-                
+
+
         free(buf1);
         free(buf2);
     }
-    else 
+    else
     {
         cerr<<Path1 <<" size : " <<szFile1 <<endl<<Path2<< " size : " << szFile2<<endl;
     }
-    
+
     cout    << "results" << endl<< " File 1 size : " << szFile1<<endl
-            << " File 2 size: " << szFile2 << endl 
+            << " File 2 size: " << szFile2 << endl
             << " Bytes Match : " << ctBytesMatch<<endl
             << " Bytes Different: " << ctBytesMisMatch<<endl;
 
     fclose(pFile1);
     fclose(pFile2);
-    
+
     return ret_val;
 }
 
@@ -1161,25 +1180,25 @@ class CHistogram
             m_pBinsEdges = std::shared_ptr<float>(new float[m_nBins+1]);
             InitializeArrays();
             MakeHistogram(data, min, max);
-            
+
         }
         ~CHistogram()
         {
             m_pHist.reset();
             m_pBinsEdges.reset();
-            
+
             // cout << "hist:" << hex << m_pHist.get() << " bins: "<< m_pBinsEdges.get() << dec << endl;
         }
         void InitializeArrays()
         {
             for(size_t b = 0; b < m_nBins+1; b++)
                 m_pBinsEdges.get()[b] = 0;
-            
+
             for(size_t d = 0; d < m_nBins; d++)
                 m_pHist.get()[d] = 0;
-            
+
         }
-    
+
         bool Save()
         {
             return SaveToFile(m_Path);
@@ -1196,7 +1215,7 @@ class CHistogram
             }
             return bSuccess;
         }
-    
+
         void PrintHistogram(FILE* f = stdout)
         {
             for(size_t i = 0; i < m_nBins; i++)
@@ -1207,7 +1226,7 @@ class CHistogram
             }
             fflush(f);
         }
-    
+
     protected:
         template<class TVal>
         void MakeHistogram(vector<TVal>& data, const float* const min, const float* const max)
@@ -1217,28 +1236,28 @@ class CHistogram
             assert(mindata < maxdata);
             float delta = (maxdata - mindata)/float(m_nBins);
             cout << "min = "<< mindata << " max = " << maxdata << " nbins = "<< m_nBins << endl;
-            
+
             // Set the bin edges.
             for(size_t b = 0; b < m_nBins+1; b++)
                 m_pBinsEdges.get()[b] = delta*b + mindata;
-            
+
             // Make the histogram.
             size_t bndx = 0;
             for(size_t d = 0; d < data.size(); d++)
             {
                 bndx = int((data[d]-mindata)/delta);
                 m_pHist.get()[bndx]++;
-                
+
                 assert(BOUNDED(data[d], m_pBinsEdges.get()[bndx], m_pBinsEdges.get()[bndx+1]));
                 if(!BOUNDED(data[d], m_pBinsEdges.get()[bndx], m_pBinsEdges.get()[bndx+1]))
                 {
                     cout << "Error! data out of histogram bin ranges! "<< endl;
                 }
             }
-            
+
         }
-    
-    
+
+
     private:
         string m_Path;
         size_t m_nBins;
@@ -1392,13 +1411,3 @@ inline typename std::enable_if< I < 5, void>::type count_to_five_or_less(const s
 
 
 #endif
-
-
-
-
-
-
-
-
-
-
