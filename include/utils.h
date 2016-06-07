@@ -836,6 +836,7 @@ template <class TVal>
 inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, string delim = ",", const size_t& reserve = 0, const size_t& skiprows = 0 , const size_t& stoprow = 0, const size_t& axis = 1)
 {
     // TODO: check for valid axis.
+    std::cout << "load_txt - N path = "<< path << std::endl;
     ifstream txtfile;
     txtfile.open(path.c_str(), ios_base::in);
     if(txtfile)
@@ -844,6 +845,8 @@ inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, stri
         size_t ln = 0, lnread = 0;
         while (std::getline(txtfile, line, '\n'))
         {
+            if(ln % 10000 == 0)
+                std::cout << "read "<< ln << " lines!" << std::endl;
             ln++;
             if(ln-1 < skiprows) continue;
             else if (stoprow && ln > stoprow) break;
@@ -853,6 +856,7 @@ inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, stri
 
             if(data.size() == 0 && axis == 1)
             {
+                data.reserve(split.size());
                 for(size_t i = 0; i < split.size(); i++)
                 {
                     vector<TVal> temp;
@@ -861,10 +865,23 @@ inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, stri
                         data[i].reserve(reserve);
                 }
             }
+            if(axis == 1 &&  split.size() != data.size())
+            {
+                std::cout << "error @ line "<< ln <<" split size = "<< split.size() << ", data size = "<< data.size() << std::endl;
+                if( split.size() < data.size())
+                {
+                    std::cout << "warning!! skipping line "<< ln << std::endl;
+                    continue;
+                }
+                else
+                {
+                    std::cout << "warning!! trucating the extra columns!" << std::endl;
+                }
+            }
             vector<TVal> tempAxis0;
             for(size_t i = 0; i < split.size(); i++)
             {
-                if(axis == 1)
+                if(axis == 1 && i < data.size())
                 {
                     TVal temp;
                     stringstream ss;
@@ -890,8 +907,10 @@ inline bool load_txt(vector< vector<TVal> >& data, const std::string& path, stri
     }
     else
     {
+        std::cout << "load_txt - X (false)" << std::endl;
         return false;
     }
+    std::cout << "load_txt - X (true)" << std::endl;
     return true;
 }
 
